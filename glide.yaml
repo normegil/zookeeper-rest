@@ -1,2 +1,4 @@
 package: github.com/normegil/zookeeper-rest
-import: []
+import:
+- package: github.com/sirupsen/logrus
+  version: ~0.11.4
