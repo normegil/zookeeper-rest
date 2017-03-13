@@ -5,16 +5,18 @@ import (
 	"github.com/normegil/zookeeper-rest/api/node"
 	"github.com/normegil/zookeeper-rest/modules/environment"
 	"github.com/normegil/zookeeper-rest/modules/log"
+	"github.com/normegil/zookeeper-rest/modules/zookeeper"
 	"github.com/normegil/zookeeper-rest/router"
 )
 
 const PORT int = 8080
 const LOG_PATH string = "/tmp/"
+const ZK_ADDRESS string = "127.0.0.1"
 
 var LOG *logrus.Entry = log.New(LOG_PATH, "zookeeper-rest")
 
 func main() {
-	env := environment.Env{LOG}
+	env := environment.Env{LOG, zookeeper.Zookeeper{ZK_ADDRESS}}
 	rt := router.New(env)
 	if err := rt.Register(node.Controller{env}.Routes()); nil != err {
 		panic(err)
