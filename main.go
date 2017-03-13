@@ -18,10 +18,12 @@ var log *logrus.Entry = logrus.NewEntry(logrus.New())
 
 func init() {
 	extention := "log"
-	log.Logger.Hooks.Add(lfshook.NewHook(lfshook.WriterMap{
+	hook := lfshook.NewHook(lfshook.WriterMap{
 		logrus.InfoLevel:  NewLogRotation(LOG_PATH, "zookeeper-rest.info", extention),
 		logrus.ErrorLevel: NewLogRotation(LOG_PATH, "zookeeper-rest.error", extention),
-	}))
+	})
+	hook.SetFormatter(&logrus.JSONFormatter{})
+	log.Logger.Hooks.Add(hook)
 }
 
 func main() {
