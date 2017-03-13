@@ -4,3 +4,5 @@ import:
   version: ^1.5.0
 - package: github.com/Sirupsen/logrus
   version: ~0.11.4
+- package: github.com/lestrrat/go-file-rotatelogs
+  version: ^2.0.0
