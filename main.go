@@ -10,8 +10,10 @@ import (
 
 const PORT int = 8080
 
-func init() {
+var log *logrus.Entry = logrus.NewEntry(logrus.New())
 
+func init() {
+	log = log.WithField("Test", "123")
 }
 
 func main() {
@@ -19,6 +21,6 @@ func main() {
 		fmt.Fprintf(w, "Test")
 	})
 
-	logrus.WithField("port", PORT).Info("Launch server")
+	log.WithField("port", PORT).Info("Launch server")
 	http.ListenAndServe(":"+strconv.Itoa(PORT), nil)
 }
