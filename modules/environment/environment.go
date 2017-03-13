@@ -1,4 +1,4 @@
-package model
+package environment
 
 import (
 	"github.com/Sirupsen/logrus"

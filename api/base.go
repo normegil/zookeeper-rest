@@ -1,16 +1,16 @@
-package rest
+package api
 
 import (
 	"fmt"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/normegil/zookeeper-rest/model"
+	"github.com/normegil/zookeeper-rest/modules/environment"
 	"github.com/normegil/zookeeper-rest/router"
 )
 
 type Controller struct {
-	model.Env
+	environment.Env
 }
 
 func (c Controller) Routes() []router.Route {

@@ -6,16 +6,16 @@ import (
 	"strconv"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/normegil/zookeeper-rest/model"
-	"github.com/normegil/zookeeper-rest/router/middleware"
+	"github.com/normegil/zookeeper-rest/modules/environment"
+	"github.com/normegil/zookeeper-rest/modules/middleware"
 )
 
 type Router struct {
-	model.Env
+	environment.Env
 	router *httprouter.Router
 }
 
-func New(env model.Env) *Router {
+func New(env environment.Env) *Router {
 	return &Router{
 		Env:    env,
 		router: httprouter.New(),
@@ -47,7 +47,7 @@ func (r *Router) Register(routes []Route) error {
 }
 
 func (r *Router) Listen(port int) error {
-	handler := middleware.RequestLogger(r.Env, r.router)
+	handler := middleware.RequestLogger(r.Env.Log(), r.router)
 
 	r.Log().WithField("port", port).Info("Launching server")
 	if err := http.ListenAndServe(":"+strconv.Itoa(port), handler); nil != err {
