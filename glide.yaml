@@ -10,3 +10,6 @@ import:
   version: ~0.1.2
 - package: github.com/julienschmidt/httprouter
   version: ^1.1.0
+- package: github.com/samuel/go-zookeeper
+  subpackages:
+  - zk

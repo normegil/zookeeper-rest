@@ -1,5 +1,5 @@
-hash: 022250d6a758e1b1ad8331a861cf18b2e03deb42069924ab1271e789e5e8f5bf
-updated: 2017-03-13T11:54:57.036824482+01:00
+hash: d46e3d0836b419d89913403ba27db09846e3a428aa8e41f6e1f70f52bc579259
+updated: 2017-03-13T15:56:32.980879251+01:00
 imports:
 - name: bitbucket.org/tebeka/strftime
   version: af5e0ef38369dfb5819b56d27d593142841e4600
@@ -9,6 +9,10 @@ imports:
   version: ab335c655133cea61d8164853c1ed0e97d6c77cb
 - name: github.com/rifflock/lfshook
   version: 1ae91782cf87524466b000ea12d8291ea48269be
+- name: github.com/samuel/go-zookeeper
+  version: 1d7be4effb13d2d908342d349d71a284a7542693
+  subpackages:
+  - zk
 - name: github.com/Sirupsen/logrus
   version: 0208149b40d863d2c1a2f8fe5753096a9cf2cc8b
 - name: golang.org/x/sys
