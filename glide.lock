@@ -1,8 +1,10 @@
-hash: 5d15659bd9c315bad4721d73af76bf17e7162b1b9d1d77abba473493b233e93e
-updated: 2017-03-13T10:48:53.250029177+01:00
+hash: 022250d6a758e1b1ad8331a861cf18b2e03deb42069924ab1271e789e5e8f5bf
+updated: 2017-03-13T11:54:57.036824482+01:00
 imports:
 - name: bitbucket.org/tebeka/strftime
   version: af5e0ef38369dfb5819b56d27d593142841e4600
+- name: github.com/julienschmidt/httprouter
+  version: 8c199fb6259ffc1af525cc3ad52ee60ba8359669
 - name: github.com/lestrrat/go-file-rotatelogs
   version: ab335c655133cea61d8164853c1ed0e97d6c77cb
 - name: github.com/rifflock/lfshook
