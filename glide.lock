@@ -1,9 +1,9 @@
-hash: dab65578de3bf5cfef3df0dd94127b06991c1879e678136fdb790343014a3db5
-updated: 2017-03-13T09:51:24.230875562+01:00
+hash: c2bb3512406a02c493db1f85062ee906d3c4915bd0a12f6774d52deaddf7351f
+updated: 2017-03-13T10:11:13.28966543+01:00
 imports:
 - name: github.com/rifflock/lfshook
   version: 1ae91782cf87524466b000ea12d8291ea48269be
-- name: github.com/sirupsen/logrus
+- name: github.com/Sirupsen/logrus
   version: 0208149b40d863d2c1a2f8fe5753096a9cf2cc8b
 - name: golang.org/x/sys
   version: d75a52659825e75fff6158388dddc6a5b04f9ba5
