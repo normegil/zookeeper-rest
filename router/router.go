@@ -5,18 +5,19 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/julienschmidt/httprouter"
+	"github.com/normegil/zookeeper-rest/model"
+	"github.com/normegil/zookeeper-rest/router/middleware"
 )
 
 type Router struct {
-	log    *logrus.Entry
+	model.Env
 	router *httprouter.Router
 }
 
-func New(log *logrus.Entry) *Router {
+func New(env model.Env) *Router {
 	return &Router{
-		log:    log,
+		Env:    env,
 		router: httprouter.New(),
 	}
 }
@@ -46,8 +47,10 @@ func (r *Router) Register(routes []Route) error {
 }
 
 func (r *Router) Listen(port int) error {
-	r.log.WithField("port", port).Info("Launching server")
-	if err := http.ListenAndServe(":"+strconv.Itoa(port), r.router); nil != err {
+	handler := middleware.RequestLogger(r.Env, r.router)
+
+	r.Log().WithField("port", port).Info("Launching server")
+	if err := http.ListenAndServe(":"+strconv.Itoa(port), handler); nil != err {
 		return err
 	}
 	return nil

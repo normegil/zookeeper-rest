@@ -14,8 +14,13 @@ const LOG_PATH string = "/tmp/"
 var LOG *logrus.Entry = log.New(LOG_PATH, "zookeeper-rest")
 
 func main() {
-	rt := router.New(LOG)
+	LOG.Logger.Level = logrus.DebugLevel
 	env := model.Env{LOG}
-	rt.Register(rest.Controller{env}.Routes())
-	rt.Listen(PORT)
+	rt := router.New(env)
+	if err := rt.Register(rest.Controller{env}.Routes()); nil != err {
+		panic(err)
+	}
+	if err := rt.Listen(PORT); nil != err {
+		panic(err)
+	}
 }

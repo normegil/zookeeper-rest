@@ -1,6 +1,6 @@
 package model
 
-import(
+import (
 	"github.com/Sirupsen/logrus"
 )
 

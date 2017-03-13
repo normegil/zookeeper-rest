@@ -16,7 +16,6 @@ type Controller struct {
 func (c Controller) Routes() []router.Route {
 	return []router.Route{
 		router.NewRoute("GET", "/", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-			c.Log().Info("Request for root")
 			fmt.Fprintf(w, "Test")
 		}),
 	}

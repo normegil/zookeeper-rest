@@ -11,8 +11,8 @@ import (
 func New(path string, filename string) *logrus.Entry {
 	extention := "log"
 	hook := lfshook.NewHook(lfshook.WriterMap{
-		logrus.InfoLevel:  newLogRotation(path, filename + ".info", extention),
-		logrus.ErrorLevel: newLogRotation(path, filename + ".error", extention),
+		logrus.InfoLevel:  newLogRotation(path, filename+".info", extention),
+		logrus.ErrorLevel: newLogRotation(path, filename+".error", extention),
 	})
 	hook.SetFormatter(&logrus.JSONFormatter{})
 
