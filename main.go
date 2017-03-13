@@ -1,26 +1,17 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-	"strconv"
-
 	"github.com/Sirupsen/logrus"
-	"github.com/julienschmidt/httprouter"
 	"github.com/normegil/zookeeper-rest/log"
+	"github.com/normegil/zookeeper-rest/router"
 )
 
-const LOG_PATH string = "/tmp/"
 const PORT int = 8080
+const LOG_PATH string = "/tmp/"
 
 var LOG *logrus.Entry = log.New(LOG_PATH, "zookeeper-rest")
 
 func main() {
-	router := httprouter.New()
-	router.GET("/", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-		fmt.Fprintf(w, "Test")
-	})
-
-	LOG.WithField("port", PORT).Info("Launch server")
-	http.ListenAndServe(":"+strconv.Itoa(PORT), router)
+	rt := &router.Router{LOG}
+	rt.Serve(PORT)
 }
