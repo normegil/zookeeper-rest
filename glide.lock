@@ -1,8 +1,10 @@
-hash: d46e3d0836b419d89913403ba27db09846e3a428aa8e41f6e1f70f52bc579259
-updated: 2017-03-13T15:56:32.980879251+01:00
+hash: 13abcd7a10d71336f969fb5ac48daaf037ace2f26e612b4e92f32a7a6df7cfea
+updated: 2017-03-14T15:26:57.421938032+01:00
 imports:
 - name: bitbucket.org/tebeka/strftime
   version: af5e0ef38369dfb5819b56d27d593142841e4600
+- name: github.com/Gurpartap/logrus-stack
+  version: f9a07a6433014aff95d7c59a24fc3155ea7ce830
 - name: github.com/julienschmidt/httprouter
   version: 8c199fb6259ffc1af525cc3ad52ee60ba8359669
 - name: github.com/lestrrat/go-file-rotatelogs
