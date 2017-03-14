@@ -1,8 +1,10 @@
-hash: 13abcd7a10d71336f969fb5ac48daaf037ace2f26e612b4e92f32a7a6df7cfea
-updated: 2017-03-14T15:26:57.421938032+01:00
+hash: 234c467f9c5f54c3955c16d989880acb856659143dff9396a252b2d448d846aa
+updated: 2017-03-14T15:35:01.166711353+01:00
 imports:
 - name: bitbucket.org/tebeka/strftime
   version: af5e0ef38369dfb5819b56d27d593142841e4600
+- name: github.com/facebookgo/stack
+  version: 751773369052141c013c6e827a71e8f35c07879c
 - name: github.com/Gurpartap/logrus-stack
   version: f9a07a6433014aff95d7c59a24fc3155ea7ce830
 - name: github.com/julienschmidt/httprouter
