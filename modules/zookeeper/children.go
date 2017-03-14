@@ -1,7 +1,8 @@
 package zookeeper
 
-import(
+import (
 	"time"
+
 	"github.com/normegil/zookeeper-rest/modules/log"
 	"github.com/samuel/go-zookeeper/zk"
 )
