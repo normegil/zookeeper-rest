@@ -13,7 +13,7 @@ type Handler struct {
 }
 
 func (h Handler) Handle(w http.ResponseWriter, e error) {
-	h.Log.WithError(e).Info("Error")
+	h.Log.WithError(e).Error("Error")
 	responseBody := newResponse(e)
 	w.WriteHeader(responseBody.HTTPStatus)
 	responseBodyJSON, err := json.Marshal(responseBody)

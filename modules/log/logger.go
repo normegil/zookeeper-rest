@@ -3,6 +3,7 @@ package log
 import (
 	"time"
 
+	stackhook "github.com/Gurpartap/logrus-stack"
 	"github.com/Sirupsen/logrus"
 	logrotation "github.com/lestrrat/go-file-rotatelogs"
 	"github.com/rifflock/lfshook"
@@ -10,14 +11,15 @@ import (
 
 func New(path string, filename string) *logrus.Entry {
 	extention := "log"
-	hook := lfshook.NewHook(lfshook.WriterMap{
+	fileHook := lfshook.NewHook(lfshook.WriterMap{
 		logrus.InfoLevel:  newLogRotation(path, filename+".info", extention),
 		logrus.ErrorLevel: newLogRotation(path, filename+".error", extention),
 	})
-	hook.SetFormatter(&logrus.JSONFormatter{})
+	fileHook.SetFormatter(&logrus.JSONFormatter{})
 
 	log := logrus.NewEntry(logrus.New())
-	log.Logger.Hooks.Add(hook)
+	log.Logger.Hooks.Add(fileHook)
+	log.Logger.Hooks.Add(stackhook.StandardHook())
 	return log
 }
 
