@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/normegil/aphrodite/modules/json"
-	"github.com/normegil/aphrodite/modules/test"
+	"github.com/normegil/zookeeper-rest/modules/json"
+	"github.com/normegil/zookeeper-rest/modules/test"
 )
 
 func TestErrorToString(t *testing.T) {

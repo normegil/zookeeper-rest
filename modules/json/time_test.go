@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/normegil/aphrodite/modules/json"
-	"github.com/normegil/aphrodite/modules/test"
+	"github.com/normegil/zookeeper-rest/modules/json"
+	"github.com/normegil/zookeeper-rest/modules/test"
 )
 
 func TestTimeToString(t *testing.T) {
