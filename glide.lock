@@ -1,5 +1,5 @@
-hash: 234c467f9c5f54c3955c16d989880acb856659143dff9396a252b2d448d846aa
-updated: 2017-03-14T15:35:01.166711353+01:00
+hash: ee67e60b6e44b00a80fe438dd10eef122793843ddd121d0205dede067d38732a
+updated: 2017-03-15T11:48:40.578376142+01:00
 imports:
 - name: bitbucket.org/tebeka/strftime
   version: af5e0ef38369dfb5819b56d27d593142841e4600
@@ -17,8 +17,10 @@ imports:
   version: 1d7be4effb13d2d908342d349d71a284a7542693
   subpackages:
   - zk
+- name: github.com/satori/go.uuid
+  version: 879c5887cd475cd7864858769793b2ceb0d44feb
 - name: github.com/Sirupsen/logrus
-  version: 0208149b40d863d2c1a2f8fe5753096a9cf2cc8b
+  version: ba1b36c82c5e05c4f912a88eab0dcd91a171688f
 - name: golang.org/x/sys
   version: d75a52659825e75fff6158388dddc6a5b04f9ba5
   subpackages:
