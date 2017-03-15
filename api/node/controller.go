@@ -21,6 +21,7 @@ func (c Controller) Routes() []router.Route {
 		router.NewRoute("GET", "/rest/node", c.loadContent),
 		router.NewRoute("POST", "/rest/node", c.createOrUpdate),
 		router.NewRoute("PUT", "/rest/node", c.createOrUpdate),
+		router.NewRoute("DELETE", "/rest/node", c.remove),
 	}
 }
 

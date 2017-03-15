@@ -7,7 +7,7 @@ import (
 	"github.com/samuel/go-zookeeper/zk"
 )
 
-func (z Zookeeper) Set(path string, content []byte) error {
+func (z Zookeeper) Delete(path string) error {
 	connection, _, err := zk.Connect([]string{z.Address}, time.Second)
 	if nil != err {
 		return err
@@ -15,21 +15,9 @@ func (z Zookeeper) Set(path string, content []byte) error {
 	defer connection.Close()
 	connection.SetLogger(log.VoidLogger{})
 
-	exist, _, err := connection.Exists(path)
-	if nil != err {
-		return err
-	}
-
-	if exist {
 		_, stat, err := connection.Get(path)
 		if nil != err {
 			return err
 		}
-		_, err = connection.Set(path, content, stat.Version)
-	} else {
-		var noFlag int32 = 0
-		_, err = connection.Create(path, content, noFlag, zk.WorldACL(zk.PermAll))
-	}
-
-	return err
+	return connection.Delete(path, stat.Version)
 }
