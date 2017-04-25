@@ -1,5 +1,5 @@
-hash: ee67e60b6e44b00a80fe438dd10eef122793843ddd121d0205dede067d38732a
-updated: 2017-03-15T11:48:40.578376142+01:00
+hash: bd9b34be8b6b9ad571bb587db09d85e3957c99fec568eede2f12ef969efe8950
+updated: 2017-04-26T09:13:36.985930999+02:00
 imports:
 - name: bitbucket.org/tebeka/strftime
   version: af5e0ef38369dfb5819b56d27d593142841e4600
@@ -11,8 +11,10 @@ imports:
   version: 8c199fb6259ffc1af525cc3ad52ee60ba8359669
 - name: github.com/lestrrat/go-file-rotatelogs
   version: ab335c655133cea61d8164853c1ed0e97d6c77cb
+- name: github.com/pkg/errors
+  version: 645ef00459ed84a119197bfb8d8205042c6df63d
 - name: github.com/rifflock/lfshook
-  version: 1ae91782cf87524466b000ea12d8291ea48269be
+  version: 2adb3e0c4ddd8778c4adde609d2dfd4fbe6096ea
 - name: github.com/samuel/go-zookeeper
   version: 1d7be4effb13d2d908342d349d71a284a7542693
   subpackages:

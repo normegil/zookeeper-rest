@@ -7,21 +7,23 @@ import (
 	"github.com/normegil/zookeeper-rest/modules/log"
 	"github.com/normegil/zookeeper-rest/modules/zookeeper"
 	"github.com/normegil/zookeeper-rest/router"
+	"github.com/pkg/errors"
 )
 
 const PORT int = 8080
 const LOG_PATH string = "/tmp/"
 const ZK_ADDRESS string = "127.0.0.1"
+const VERBOSE bool = true
 
-var LOG *logrus.Entry = log.New(LOG_PATH, "zookeeper-rest")
+var LOG *logrus.Entry = log.New(LOG_PATH, "zookeeper-rest", VERBOSE)
 
 func main() {
-	env := environment.Env{LOG, zookeeper.Zookeeper{ZK_ADDRESS}}
+	env := environment.Env{LOG, zookeeper.Zookeeper{ZK_ADDRESS, LOG}}
 	rt := router.New(env)
 	if err := rt.Register(node.Controller{env}.Routes()); nil != err {
-		panic(err)
+		panic(errors.Wrap(err, "Could not register Node controllers: "))
 	}
 	if err := rt.Listen(PORT); nil != err {
-		panic(err)
+		panic(errors.Wrapf(err, "Fatal error while server listening (port:%d)", PORT))
 	}
 }

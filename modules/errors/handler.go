@@ -13,8 +13,15 @@ type Handler struct {
 }
 
 func (h Handler) Handle(w http.ResponseWriter, e error) {
-	h.Log.WithError(e).Error("Error")
+	log := h.Log
+	stacks := stacks(e)
+	if len(stacks) > 0 {
+		log = log.WithField("errorStack", stacks[0])
+	}
+	log.WithError(e).Error("Error while processing request")
+
 	responseBody := newResponse(e)
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(responseBody.HTTPStatus)
 	responseBodyJSON, err := json.Marshal(responseBody)
 	if nil != err {
@@ -23,4 +30,5 @@ func (h Handler) Handle(w http.ResponseWriter, e error) {
 		return
 	}
 	fmt.Fprint(w, string(responseBodyJSON))
+	h.Log.WithField("headers", w.Header()).Debug("Headers of error response")
 }

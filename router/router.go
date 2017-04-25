@@ -1,13 +1,13 @@
 package router
 
 import (
-	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/normegil/zookeeper-rest/modules/environment"
 	"github.com/normegil/zookeeper-rest/modules/middleware"
+	"github.com/pkg/errors"
 )
 
 type Router struct {
@@ -47,11 +47,11 @@ func (r *Router) Register(routes []Route) error {
 }
 
 func (r *Router) Listen(port int) error {
-	handler := middleware.RequestLogger(r.Env.Log(), r.router)
+	handler := middleware.URLContructor(middleware.RequestLogger(r.Env.Log(), r.router))
 
 	r.Log().WithField("port", port).Info("Launching server")
 	if err := http.ListenAndServe(":"+strconv.Itoa(port), handler); nil != err {
-		return err
+		return errors.Wrapf(err, "Error while Listening on %d", port)
 	}
 	return nil
 }

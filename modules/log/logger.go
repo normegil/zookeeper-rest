@@ -9,7 +9,7 @@ import (
 	"github.com/rifflock/lfshook"
 )
 
-func New(path string, filename string) *logrus.Entry {
+func New(path string, filename string, verbose bool) *logrus.Entry {
 	extention := "log"
 	fileHook := lfshook.NewHook(lfshook.WriterMap{
 		logrus.InfoLevel:  newLogRotation(path, filename+".info", extention),
@@ -18,8 +18,36 @@ func New(path string, filename string) *logrus.Entry {
 	fileHook.SetFormatter(&logrus.JSONFormatter{})
 
 	log := logrus.NewEntry(logrus.New())
+
+	var hook stackhook.LogrusStackHook
+	var logLvl logrus.Level
+	if verbose {
+		logLvl = logrus.DebugLevel
+		stackLvl := []logrus.Level{
+			logrus.PanicLevel,
+			logrus.FatalLevel,
+			logrus.ErrorLevel,
+		}
+		hook = stackhook.NewHook(logrus.AllLevels, stackLvl)
+	} else {
+		logLvl = logrus.InfoLevel
+		stackLvl := []logrus.Level{
+			logrus.PanicLevel,
+			logrus.FatalLevel,
+			logrus.ErrorLevel,
+		}
+		callerLvl := []logrus.Level{
+			logrus.PanicLevel,
+			logrus.FatalLevel,
+			logrus.ErrorLevel,
+			logrus.WarnLevel,
+		}
+		hook = stackhook.NewHook(callerLvl, stackLvl)
+	}
+	log.Logger.Level = logLvl
+	log.Logger.Hooks.Add(hook)
 	log.Logger.Hooks.Add(fileHook)
-	log.Logger.Hooks.Add(stackhook.StandardHook())
+
 	return log
 }
 
