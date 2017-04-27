@@ -21,3 +21,4 @@ import:
   version: ~0.8.0
 - package: github.com/spf13/cobra
 - package: github.com/spf13/viper
+- package: github.com/weekface/mgorus
