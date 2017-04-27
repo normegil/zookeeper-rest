@@ -1,6 +1,7 @@
 package log
 
 import (
+	"strings"
 	"time"
 
 	stackhook "github.com/Gurpartap/logrus-stack"
@@ -55,6 +56,9 @@ func newLogRotation(path string, name string, extention string) *logrotation.Rot
 	pattern := "%Y-%m-%d"
 	separator := "."
 
+	if !strings.HasSuffix(path, "/") {
+		path = path + "/"
+	}
 	day := time.Duration(24) * time.Hour
 	return logrotation.New(
 		path+name+separator+pattern+separator+extention,
