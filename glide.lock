@@ -1,5 +1,5 @@
-hash: bd9b34be8b6b9ad571bb587db09d85e3957c99fec568eede2f12ef969efe8950
-updated: 2017-04-26T09:13:36.985930999+02:00
+hash: e42b547f1380b32d9effc9b6e72c5b14409b64a070cd9017f613588a88df701e
+updated: 2017-04-27T15:01:21.111701289+02:00
 imports:
 - name: bitbucket.org/tebeka/strftime
   version: af5e0ef38369dfb5819b56d27d593142841e4600
@@ -23,6 +23,8 @@ imports:
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
 - name: github.com/Sirupsen/logrus
   version: ba1b36c82c5e05c4f912a88eab0dcd91a171688f
+- name: github.com/spf13/cobra
+  version: 6dd90846ba124894ee1206c89021e90e8179f1a4
 - name: golang.org/x/sys
   version: d75a52659825e75fff6158388dddc6a5b04f9ba5
   subpackages:
