@@ -7,62 +7,107 @@ import (
 	stackhook "github.com/Gurpartap/logrus-stack"
 	"github.com/Sirupsen/logrus"
 	logrotation "github.com/lestrrat/go-file-rotatelogs"
+	"github.com/pkg/errors"
 	"github.com/rifflock/lfshook"
+	uuid "github.com/satori/go.uuid"
+	"github.com/weekface/mgorus"
 )
 
-func New(path string, filename string, verbose bool) *logrus.Entry {
-	extention := "log"
-	fileHook := lfshook.NewHook(lfshook.WriterMap{
-		logrus.InfoLevel:  newLogRotation(path, filename+".info", extention),
-		logrus.ErrorLevel: newLogRotation(path, filename+".error", extention),
-	})
-	fileHook.SetFormatter(&logrus.JSONFormatter{})
+type Options struct {
+	Verbose bool
+	File    FileOptions
+	DB      MongoOptions
+}
 
+type FileOptions struct {
+	FolderPath string
+	FileName   string
+	MaxAge     time.Duration
+}
+
+type MongoOptions struct {
+	Address    string
+	Port       string
+	DB         string
+	Collection string
+	User       string
+	Password   string
+}
+
+func New(opts Options) *logrus.Entry {
 	log := logrus.NewEntry(logrus.New())
-
-	var hook stackhook.LogrusStackHook
-	var logLvl logrus.Level
-	if verbose {
-		logLvl = logrus.DebugLevel
-		stackLvl := []logrus.Level{
-			logrus.PanicLevel,
-			logrus.FatalLevel,
-			logrus.ErrorLevel,
-		}
-		hook = stackhook.NewHook(logrus.AllLevels, stackLvl)
-	} else {
-		logLvl = logrus.InfoLevel
-		stackLvl := []logrus.Level{
-			logrus.PanicLevel,
-			logrus.FatalLevel,
-			logrus.ErrorLevel,
-		}
-		callerLvl := []logrus.Level{
-			logrus.PanicLevel,
-			logrus.FatalLevel,
-			logrus.ErrorLevel,
-			logrus.WarnLevel,
-		}
-		hook = stackhook.NewHook(callerLvl, stackLvl)
+	if opts.Verbose {
+		log.Logger.Level = logrus.DebugLevel
 	}
-	log.Logger.Level = logLvl
-	log.Logger.Hooks.Add(hook)
-	log.Logger.Hooks.Add(fileHook)
+
+	log.Logger.Hooks.Add(stackHK())
+
+	if "" != opts.File.FileName {
+		log.Logger.Hooks.Add(fileHK(opts.File))
+	}
+
+	if "" != opts.DB.Address {
+		log.Logger.Hooks.Add(mongoHK(opts.DB))
+		log = log.WithField("executionID", uuid.NewV4().String())
+	}
 
 	return log
 }
 
-func newLogRotation(path string, name string, extention string) *logrotation.RotateLogs {
+func fileHK(opts FileOptions) logrus.Hook {
+	fileHook := lfshook.NewHook(lfshook.WriterMap{
+		logrus.InfoLevel: newLogRotation(FileOptions{
+			FolderPath: opts.FolderPath,
+			FileName:   opts.FileName + ".info",
+			MaxAge:     opts.MaxAge,
+		}),
+		logrus.ErrorLevel: newLogRotation(FileOptions{
+			FolderPath: opts.FolderPath,
+			FileName:   opts.FileName + ".error",
+			MaxAge:     opts.MaxAge,
+		}),
+	})
+	fileHook.SetFormatter(&logrus.JSONFormatter{})
+	return fileHook
+}
+
+func newLogRotation(opts FileOptions) *logrotation.RotateLogs {
 	pattern := "%Y-%m-%d"
 	separator := "."
 
+	path := opts.FolderPath
 	if !strings.HasSuffix(path, "/") {
 		path = path + "/"
 	}
-	day := time.Duration(24) * time.Hour
 	return logrotation.New(
-		path+name+separator+pattern+separator+extention,
-		logrotation.WithLinkName(path+name+separator+extention),
-		logrotation.WithMaxAge(time.Duration(7)*day),
+		path+opts.FileName+separator+pattern+separator+"log",
+		logrotation.WithLinkName(path+opts.FileName+separator+"log"),
+		logrotation.WithMaxAge(opts.MaxAge),
 	)
+}
+
+func stackHK() logrus.Hook {
+	return stackhook.NewHook(logrus.AllLevels, []logrus.Level{
+		logrus.PanicLevel,
+		logrus.FatalLevel,
+		logrus.ErrorLevel,
+	})
+}
+
+func mongoHK(opts MongoOptions) logrus.Hook {
+	var mongoHook logrus.Hook
+	if "" != opts.User && "" != opts.Password {
+		var err error
+		mongoHook, err = mgorus.NewHookerWithAuth(opts.Address+":"+opts.Port, opts.DB, opts.Collection, opts.User, opts.Password)
+		if nil != err {
+			panic(errors.Wrap(err, "Connecting to Mongo DB"))
+		}
+	} else {
+		var err error
+		mongoHook, err = mgorus.NewHooker(opts.Address+":"+opts.Port, opts.DB, opts.Collection)
+		if nil != err {
+			panic(errors.Wrap(err, "Connecting to Mongo DB"))
+		}
+	}
+	return mongoHook
 }
