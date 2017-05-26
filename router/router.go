@@ -47,7 +47,7 @@ func (r *Router) Register(routes []Route) error {
 }
 
 func (r *Router) Listen(port int) error {
-	handler := middleware.URLContructor(middleware.RequestLogger(r.Env.Log(), r.router))
+	handler := middleware.URLContructor(middleware.RequestLogger(r.Env.Log(), middleware.RequestAuthenticator(r.Env.Log(), r.Env.Session(), r.router)))
 
 	r.Log().WithField("port", port).Info("Launching server")
 	if err := http.ListenAndServe(":"+strconv.Itoa(port), handler); nil != err {

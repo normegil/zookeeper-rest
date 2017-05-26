@@ -1,5 +1,5 @@
-hash: 49eae0d07f7b04d5042778317ace819ecd946e93b1e83be46e7ef2b0140954a0
-updated: 2017-04-27T16:07:41.553111711+02:00
+hash: e899a5a869babb8368dab8eca94a3f565574e4b3c8ba6daf99ca8f108591bd59
+updated: 2017-05-19T08:10:56.237258178+02:00
 imports:
 - name: bitbucket.org/tebeka/strftime
   version: af5e0ef38369dfb5819b56d27d593142841e4600
@@ -10,7 +10,7 @@ imports:
 - name: github.com/Gurpartap/logrus-stack
   version: f9a07a6433014aff95d7c59a24fc3155ea7ce830
 - name: github.com/hashicorp/hcl
-  version: 7fa7fff964d035e8a162cce3a164b3ad02ad651b
+  version: 392dba7d905ed5d04a5794ba89f558b27e2ba1ca
   subpackages:
   - hcl/ast
   - hcl/parser
@@ -33,7 +33,7 @@ imports:
 - name: github.com/pelletier/go-buffruneio
   version: c37440a7cf42ac63b919c752ca73a85067e05992
 - name: github.com/pelletier/go-toml
-  version: fe206efb84b2bc8e8cfafe6b4c1826622be969e3
+  version: 5c26a6ff6fd178719e15decac1c8196da0d7d6d1
 - name: github.com/pkg/errors
   version: 645ef00459ed84a119197bfb8d8205042c6df63d
 - name: github.com/rifflock/lfshook
@@ -53,24 +53,31 @@ imports:
 - name: github.com/spf13/cast
   version: acbeb36b902d72a7a4c18e8f3241075e7ab763e4
 - name: github.com/spf13/cobra
-  version: 3d7bff8a321b0a0f88b115558bb7e21bec9124ab
+  version: fb1f39915d092e6ecbdb38c0861170bdf4416800
 - name: github.com/spf13/jwalterweatherman
-  version: fa7ca7e836cf3a8bb4ebf799f472c12d7e903d66
+  version: 8f07c835e5cc1450c082fe3a439cf87b0cbb2d99
 - name: github.com/spf13/pflag
-  version: f1d95a35e132e8a1868023a08932b14f0b8b8fcb
+  version: e57e3eeb33f795204c1ca35f56c44f83227c6e66
 - name: github.com/spf13/viper
   version: 0967fc9aceab2ce9da34061253ac10fb99bba5b2
 - name: github.com/weekface/mgorus
-  version: eeb53e58cd66e8174f5943a055ddca2ab18c48e3
+  version: a62789d86c0178921db91f878b66eaaf3fa3bf2b
 - name: golang.org/x/sys
   version: d75a52659825e75fff6158388dddc6a5b04f9ba5
   subpackages:
   - unix
 - name: golang.org/x/text
-  version: 470f45bf29f4147d6fbd7dfd0a02a848e49f5bf4
+  version: 19e51611da83d6be54ddafce4a4af510cb3e9ea4
   subpackages:
   - transform
   - unicode/norm
+- name: gopkg.in/mgo.v2
+  version: 3f83fa5005286a7fe593b055f0d7771a7dce4655
+  subpackages:
+  - bson
+  - internal/json
+  - internal/sasl
+  - internal/scram
 - name: gopkg.in/yaml.v2
   version: cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b
 testImports: []

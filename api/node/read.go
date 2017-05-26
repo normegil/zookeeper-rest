@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
-	jsonUtils "github.com/normegil/zookeeper-rest/modules/json"
+	jsonUtils "github.com/normegil/zookeeper-rest/modules/formats/json"
 	"github.com/pkg/errors"
 	uuid "github.com/satori/go.uuid"
 )

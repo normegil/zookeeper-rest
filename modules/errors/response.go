@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/normegil/zookeeper-rest/modules/json"
+	"github.com/normegil/zookeeper-rest/modules/formats/json"
 )
 
 //go:generate go-bindata -pkg $GOPACKAGE -o assets.go assets/

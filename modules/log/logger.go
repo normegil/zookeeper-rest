@@ -1,6 +1,7 @@
 package log
 
 import (
+	"strconv"
 	"strings"
 	"time"
 
@@ -25,13 +26,12 @@ type FileOptions struct {
 	MaxAge     time.Duration
 }
 
-type MongoOptions struct {
-	Address    string
-	Port       string
-	DB         string
-	Collection string
-	User       string
-	Password   string
+type MongoOptions interface {
+	URL() string
+	Port() int
+	Database() string
+	User() string
+	Password() string
 }
 
 func New(opts Options) *logrus.Entry {
@@ -46,7 +46,7 @@ func New(opts Options) *logrus.Entry {
 		log.Logger.Hooks.Add(fileHK(opts.File))
 	}
 
-	if "" != opts.DB.Address {
+	if "" != opts.DB.URL() {
 		log.Logger.Hooks.Add(mongoHK(opts.DB))
 		log = log.WithField("executionID", uuid.NewV4().String())
 	}
@@ -96,15 +96,16 @@ func stackHK() logrus.Hook {
 
 func mongoHK(opts MongoOptions) logrus.Hook {
 	var mongoHook logrus.Hook
-	if "" != opts.User && "" != opts.Password {
+	collection := "log"
+	if "" != opts.User() && "" != opts.Password() {
 		var err error
-		mongoHook, err = mgorus.NewHookerWithAuth(opts.Address+":"+opts.Port, opts.DB, opts.Collection, opts.User, opts.Password)
+		mongoHook, err = mgorus.NewHookerWithAuth(opts.URL()+":"+strconv.Itoa(opts.Port()), opts.Database(), collection, opts.User(), opts.Password())
 		if nil != err {
 			panic(errors.Wrap(err, "Connecting to Mongo DB"))
 		}
 	} else {
 		var err error
-		mongoHook, err = mgorus.NewHooker(opts.Address+":"+opts.Port, opts.DB, opts.Collection)
+		mongoHook, err = mgorus.NewHooker(opts.URL()+":"+strconv.Itoa(opts.Port()), opts.Database(), collection)
 		if nil != err {
 			panic(errors.Wrap(err, "Connecting to Mongo DB"))
 		}
