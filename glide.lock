@@ -1,5 +1,5 @@
-hash: e899a5a869babb8368dab8eca94a3f565574e4b3c8ba6daf99ca8f108591bd59
-updated: 2017-05-19T08:10:56.237258178+02:00
+hash: 9f9ffddc6e94acb2d663120a3bd2139b5b7f1ee4e81cf50da2d2ae12ca94fe96
+updated: 2017-05-31T15:37:39.106900344+02:00
 imports:
 - name: bitbucket.org/tebeka/strftime
   version: af5e0ef38369dfb5819b56d27d593142841e4600
@@ -29,11 +29,17 @@ imports:
 - name: github.com/magiconair/properties
   version: 51463bfca2576e06c62a8504b5c0f06d61312647
 - name: github.com/mitchellh/mapstructure
-  version: cc8532a8e9a55ea36402aa21efdf403a60d34096
+  version: d0303fe809921458f417bcf828397a65db30a7e4
+- name: github.com/onsi/ginkgo
+  version: 77a8c1e5c40d6bb6c5eb4dd4bdce9763564f6298
+  subpackages:
+  - ginkgo
+- name: github.com/onsi/gomega
+  version: 334b8f472b3af5d541c5642701c1e29e2126f486
 - name: github.com/pelletier/go-buffruneio
   version: c37440a7cf42ac63b919c752ca73a85067e05992
 - name: github.com/pelletier/go-toml
-  version: 5c26a6ff6fd178719e15decac1c8196da0d7d6d1
+  version: 5ccdfb18c776b740aecaf085c4d9a2779199c279
 - name: github.com/pkg/errors
   version: 645ef00459ed84a119197bfb8d8205042c6df63d
 - name: github.com/rifflock/lfshook
@@ -53,9 +59,9 @@ imports:
 - name: github.com/spf13/cast
   version: acbeb36b902d72a7a4c18e8f3241075e7ab763e4
 - name: github.com/spf13/cobra
-  version: fb1f39915d092e6ecbdb38c0861170bdf4416800
+  version: 8d4ce3549a0bf0e3569df3aae7423b7743cd05a9
 - name: github.com/spf13/jwalterweatherman
-  version: 8f07c835e5cc1450c082fe3a439cf87b0cbb2d99
+  version: 0efa5202c04663c757d84f90f5219c1250baf94f
 - name: github.com/spf13/pflag
   version: e57e3eeb33f795204c1ca35f56c44f83227c6e66
 - name: github.com/spf13/viper
@@ -67,7 +73,7 @@ imports:
   subpackages:
   - unix
 - name: golang.org/x/text
-  version: 19e51611da83d6be54ddafce4a4af510cb3e9ea4
+  version: 4ee4af566555f5fbe026368b75596286a312663a
   subpackages:
   - transform
   - unicode/norm
