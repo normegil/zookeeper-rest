@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/normegil/zookeeper-rest/modules/json"
+	"github.com/normegil/zookeeper-rest/modules/formats/json"
 	"github.com/normegil/zookeeper-rest/modules/test"
 )
 
