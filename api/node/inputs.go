@@ -6,16 +6,17 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-const KeyNodeID = "nodeID"
+const NODE_ID_PARAM_KEY = "nodeID"
 
 func (c Controller) path(params httprouter.Params) (string, error) {
-	path := params.ByName(KeyNodeID)
+	path := params.ByName(NODE_ID_PARAM_KEY)
+
 	if "" == path {
 		return "/", nil
 	}
 	id, err := uuid.FromString(path)
 	if nil != err {
-		return "", errors.Wrapf(err, "Parse parameter %s into UUID", KeyNodeID)
+		return "", errors.Wrapf(err, "Parse parameter %s into UUID", NODE_ID_PARAM_KEY)
 	}
 
 	p, err := c.Zookeeper().Path(id.String())

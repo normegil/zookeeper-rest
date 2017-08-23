@@ -8,21 +8,20 @@ import (
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
-	jsonUtils "github.com/normegil/zookeeper-rest/modules/formats/json"
+	"github.com/normegil/zookeeper-rest/modules/formats"
 	"github.com/pkg/errors"
 	uuid "github.com/satori/go.uuid"
 )
 
-type nodeResponse struct {
-	ID      string
-	URL     jsonUtils.JSONURL
-	Path    string
-	Content string
-	Childs  map[string]jsonUtils.JSONURL
-}
+const (
+	GET_METHOD     = "GET"
+	GET_PATH       = BASE_PATH + "/:" + NODE_ID_PARAM_KEY
+	GET_ALL_METHOD = GET_METHOD
+	GET_ALL_PATH   = BASE_PATH
+)
 
 func (c Controller) load(w http.ResponseWriter, r *http.Request, params httprouter.Params) error {
-	paramID := params.ByName(KeyNodeID)
+	paramID := params.ByName(NODE_ID_PARAM_KEY)
 	path := "/"
 	if "" != paramID {
 		id, err := uuid.FromString(paramID)
@@ -35,12 +34,11 @@ func (c Controller) load(w http.ResponseWriter, r *http.Request, params httprout
 		}
 	}
 
-	node, err := c.Zookeeper().Load(path)
+	node, err := c.Zookeeper().Load(path, false)
 	if nil != err {
 		return errors.Wrap(err, "Loading node content")
 	}
-
-	c.Log().WithField("Path", path).Debug("Node read")
+	c.Log().WithField("node", node).Debugf("Node loaded: %s", path)
 
 	baseURL := "http://" + r.Host + r.URL.Path
 	if "" != paramID {
@@ -59,16 +57,23 @@ func (c Controller) load(w http.ResponseWriter, r *http.Request, params httprout
 		return errors.Wrapf(err, "Parsing current URL (%s)", urlAsStr)
 	}
 
-	ids, err := c.Zookeeper().IDs(node.Childs)
+	childPaths := make([]string, len(node.Childs()))
+	childNodes := node.Childs()
+	c.Log().WithField("ChildNodes", childNodes).Debugf("ChildNodes loaded: %s", path)
+	for i, child := range childNodes {
+		childPaths[i] = child.Path()
+	}
+
+	ids, err := c.Zookeeper().IDs(childPaths)
 	if nil != err {
 		return errors.Wrap(err, "Loading childs paths IDs")
 	}
+	c.Log().WithField("childs", ids).WithField("paths", childPaths).Debugf("Child IDs: %s", path)
 
-	c.Log().WithField("childs", ids).Debug("Child IDs loaded")
-	childURLs := make(map[string]jsonUtils.JSONURL)
+	childURLs := make(map[string]formats.URL)
 	for path, key := range ids {
 		newURL, err := url.Parse(baseURL + "/" + key)
-		childURLs[path] = jsonUtils.JSONURL(*newURL)
+		childURLs[path] = formats.URL{newURL}
 		if nil != err {
 			return errors.Wrapf(err, "Cannot parse URL from %s", path)
 		}
@@ -76,9 +81,9 @@ func (c Controller) load(w http.ResponseWriter, r *http.Request, params httprout
 
 	nodeResp := nodeResponse{
 		ID:      id,
-		URL:     jsonUtils.JSONURL(*currentURL),
-		Path:    node.Path,
-		Content: node.Content,
+		URL:     formats.URL{currentURL},
+		Path:    node.Path(),
+		Content: string(node.Content()),
 		Childs:  childURLs,
 	}
 
@@ -89,4 +94,36 @@ func (c Controller) load(w http.ResponseWriter, r *http.Request, params httprout
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintf(w, string(response))
 	return nil
+}
+
+type nodeResponse struct {
+	ID      string
+	URL     formats.URL
+	Path    string
+	Content string
+	Childs  map[string]formats.URL
+}
+
+func (n nodeResponse) Equals(other nodeResponse) bool {
+	if n.ID != other.ID {
+		return false
+	}
+	if n.URL != other.URL {
+		return false
+	}
+	if n.Path != other.Path {
+		return false
+	}
+	if n.Content != other.Content {
+		return false
+	}
+	if len(n.Childs) != len(other.Childs) {
+		return false
+	}
+	for key, child := range n.Childs {
+		if child != other.Childs[key] {
+			return false
+		}
+	}
+	return true
 }

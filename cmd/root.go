@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"net"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -15,6 +17,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	mgo "gopkg.in/mgo.v2"
 )
 
 var configFilePath string
@@ -25,32 +28,56 @@ var RootCmd = &cobra.Command{
 	Short: "Zookeeper REST server",
 	Long:  `REST server connecting to a Zookeeper instance.`,
 	Run: func(cmd *cobra.Command, args []string) {
-
-		connection, err := mongo.NewMongo(
-			viper.GetString(MONGO_ADDRESS),
-			viper.GetInt(MONGO_PORT),
-			viper.GetString(MONGO_DATABASE),
-			viper.GetString(MONGO_USER),
-			viper.GetString(MONGO_PASS),
-		)
-		if nil != err {
-			panic(errors.Wrap(err, "Creating a new Mongo instance"))
+		mgoAddress := viper.GetString(MONGO_ADDRESS) + ":" + strconv.Itoa(viper.GetInt(MONGO_PORT))
+		session, err := mgo.Dial(mgoAddress)
+		if err != nil {
+			panic(errors.Wrapf(err, "Connecting to %s", mgoAddress))
 		}
+		defer session.Close()
+
+		mgoCredentials := &mgo.Credential{
+			Username: viper.GetString(MONGO_USER),
+			Password: viper.GetString(MONGO_PASS),
+		}
+		if "" != mgoCredentials.Username {
+			if err := session.Login(mgoCredentials); err != nil {
+				panic(err)
+			}
+		}
+
+		mgoDB := viper.GetString(MONGO_DATABASE)
+		connection := mongo.NewSession(session, mgoDB)
 		defer connection.Close()
 
-		logger := log.New(log.Options{
+		logger, err := log.New(log.Options{
 			Verbose: viper.GetBool(VERBOSE),
 			File: log.FileOptions{
 				FolderPath: viper.GetString(LOG_DIRECTORY),
 				FileName:   "zk-rest",
 				MaxAge:     time.Duration(viper.GetInt(LOG_RETENTION)*24) * time.Hour,
 			},
-			DB: connection,
+			DB: log.MongoOptions{
+				URL:      mgoAddress,
+				Database: mgoDB,
+				User:     mgoCredentials.Username,
+				Password: mgoCredentials.Password,
+			},
 		})
+		if err != nil {
+			panic(errors.Wrapf(err, "Could not initialize Logger"))
+		}
+
+		zkAddress := net.TCPAddr{
+			IP:   net.ParseIP(viper.GetString(ZOOKEEPER_ADDRESS)),
+			Port: viper.GetInt(ZOOKEEPER_PORT),
+		}
 		env := environment.Env{
 			Logger: logger,
-			Zk:     zookeeper.Zookeeper{viper.GetString(ZOOKEEPER_ADDRESS), logger},
-			Mongo:  connection,
+			Zk: zookeeper.Zookeeper{
+				Address: zkAddress,
+				Logger:  logger,
+			},
+			Mongo: connection,
 		}
 
 		rt := router.New(env)
@@ -95,6 +122,9 @@ func init() {
 	RootCmd.PersistentFlags().String("zk-address", "127.0.0.1", "Address of Zookeeper server")
 	viper.BindPFlag(ZOOKEEPER_ADDRESS, RootCmd.PersistentFlags().Lookup("zk-address"))
 
+	RootCmd.PersistentFlags().Int("zk-port", 2181, "Port of Zookeeper server")
+	viper.BindPFlag(ZOOKEEPER_PORT, RootCmd.PersistentFlags().Lookup("zk-port"))
+
 	RootCmd.PersistentFlags().String("mg-address", "localhost", "Address of the mongo DB server for logging.")
 	viper.BindPFlag(MONGO_ADDRESS, RootCmd.PersistentFlags().Lookup("mg-address"))
 
@@ -137,4 +167,5 @@ const (
 	MONGO_USER        = "mongo.user"
 	MONGO_PASS        = "mongo.pass"
 	ZOOKEEPER_ADDRESS = "zookeeper.address"
+	ZOOKEEPER_PORT    = "zookeeper.port"
 )

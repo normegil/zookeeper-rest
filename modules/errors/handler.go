@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 type Handler struct {
@@ -20,7 +20,7 @@ func (h Handler) Handle(w http.ResponseWriter, e error) {
 	}
 	log.WithError(e).Error("Error while processing request")
 
-	responseBody := newResponse(e)
+	responseBody := toResponse(e)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(responseBody.HTTPStatus)
 	responseBodyJSON, err := json.Marshal(responseBody)
@@ -30,5 +30,5 @@ func (h Handler) Handle(w http.ResponseWriter, e error) {
 		return
 	}
 	fmt.Fprint(w, string(responseBodyJSON))
-	h.Log.WithField("headers", w.Header()).Debug("Headers of error response")
+	log.WithField("headers", w.Header()).Debug("Headers of error response")
 }

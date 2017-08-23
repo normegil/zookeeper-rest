@@ -1,23 +1,16 @@
 package zookeeper
 
-import (
-	"time"
-
-	"github.com/normegil/zookeeper-rest/modules/log"
-	"github.com/pkg/errors"
-	"github.com/samuel/go-zookeeper/zk"
-)
+import "github.com/pkg/errors"
 
 func (z Zookeeper) Children(path string) ([]string, error) {
-	connection, _, err := zk.Connect([]string{z.Address}, time.Second)
+	client, err := z.client()
 	if nil != err {
-		return nil, errors.Wrap(err, "Connecting to Zookeeper")
+		return nil, errors.Wrap(err, "Could not get Zookeeper Client")
 	}
-	defer connection.Close()
-	connection.SetLogger(log.VoidLogger{})
+	defer client.Close()
 
 	z.Log().WithField("parentPath", path).Debug("Load childs")
-	children, _, err := connection.Children(path)
+	children, _, err := client.Children(path)
 	if nil != err {
 		return nil, errors.Wrapf(err, "Loading childs for %s", path)
 	}

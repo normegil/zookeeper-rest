@@ -3,9 +3,9 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/julienschmidt/httprouter"
 	"github.com/normegil/zookeeper-rest/modules/errors"
+	"github.com/sirupsen/logrus"
 )
 
 type HttpHandlerFunc func(http.ResponseWriter, *http.Request, httprouter.Params) error
@@ -17,7 +17,7 @@ type ErrorHandler struct {
 	errCodeAssigner ErrorCodeAssignerFunc
 	errHandler      ErrorHandlerFunc
 
-	logger *logrus.Entry
+	logger logrus.FieldLogger
 }
 
 func (e ErrorHandler) Handle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -41,7 +41,7 @@ func (e ErrorHandler) Handle(w http.ResponseWriter, r *http.Request, p httproute
 type ErrorHandlerFactory struct {
 	ErrorHandlerFunc
 	ErrorCodeAssignerFunc
-	Logger *logrus.Entry
+	Logger logrus.FieldLogger
 }
 
 func (f ErrorHandlerFactory) New(handler HttpHandlerFunc) *ErrorHandler {

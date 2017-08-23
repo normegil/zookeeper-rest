@@ -1,19 +1,26 @@
 package tools_test
 
 import (
-	. "github.com/normegil/zookeeper-rest/modules/tools"
-
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	"io"
 	"strings"
+	"testing"
+
+	"github.com/normegil/zookeeper-rest/modules/tools"
 )
 
-var _ = Describe("ToBytes", func() {
-	Context("When passed an io.Reader", func() {
-		It("should return the full content of the reader as bytes", func() {
-			text := "Test\nTest2"
-			stream := strings.NewReader(text)
-			Expect(ToBytes(stream)).To(Equal([]byte(text)))
-		})
-	})
-})
+func TestToByte(t *testing.T) {
+	tests := []struct {
+		input  io.Reader
+		output string
+	}{
+		{strings.NewReader("test"), "test"},
+	}
+
+	for _, test := range tests {
+		result := tools.ToBytes(test.input)
+		convertedResult := string(result)
+		if test.output != convertedResult {
+			t.Errorf("ToByte should use stream and translate it to bytes {Result:%+v;Expected:%+v}", result, test.output)
+		}
+	}
+}

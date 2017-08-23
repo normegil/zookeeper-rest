@@ -5,7 +5,6 @@
 package rotatelogs
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -14,7 +13,8 @@ import (
 	"sync"
 	"time"
 
-	"bitbucket.org/tebeka/strftime"
+	strftime "github.com/lestrrat/go-strftime"
+	"github.com/pkg/errors"
 )
 
 func (c clockFn) Now() time.Time {
@@ -27,7 +27,7 @@ func (o OptionFn) Configure(rl *RotateLogs) error {
 
 // WithClock creates a new Option that sets a clock
 // that the RotateLogs object will use to determine
-// the current time. 
+// the current time.
 //
 // By default rotatelogs.Local, which returns the
 // current time in the local time zone, is used. If you
@@ -38,6 +38,18 @@ func WithClock(c Clock) Option {
 		rl.clock = c
 		return nil
 	})
+}
+
+// WithLocation creates a new Option that sets up a
+// "Clock" interface that the RotateLogs object will use
+// to determine the current time.
+//
+// This optin works by always returning the in the given
+// location.
+func WithLocation(loc *time.Location) Option {
+	return WithClock(clockFn(func() time.Time {
+		return time.Now().In(loc)
+	}))
 }
 
 // WithLinkName creates a new Option that sets the
@@ -71,33 +83,35 @@ func WithRotationTime(d time.Duration) Option {
 
 // New creates a new RotateLogs object. A log filename pattern
 // must be passed. Optional `Option` parameters may be passed
-func New(pattern string, options ...Option) *RotateLogs {
+func New(pattern string, options ...Option) (*RotateLogs, error) {
 	globPattern := pattern
 	for _, re := range patternConversionRegexps {
 		globPattern = re.ReplaceAllString(globPattern, "*")
 	}
 
+	strfobj, err := strftime.New(pattern)
+	if err != nil {
+		return nil, errors.Wrap(err, `invalid strftime pattern`)
+	}
+
 	var rl RotateLogs
 	rl.clock = Local
 	rl.globPattern = globPattern
-	rl.pattern = pattern
+	rl.pattern = strfobj
 	rl.rotationTime = 24 * time.Hour
+	rl.maxAge = 7 * 24 * time.Hour
 	for _, opt := range options {
 		opt.Configure(&rl)
 	}
 
-	return &rl
+	return &rl, nil
 }
 
-func (rl *RotateLogs) genFilename() (string, error) {
+func (rl *RotateLogs) genFilename() string {
 	now := rl.clock.Now()
 	diff := time.Duration(now.UnixNano()) % rl.rotationTime
 	t := now.Add(time.Duration(-1 * diff))
-	str, err := strftime.Format(rl.pattern, t)
-	if err != nil {
-		return "", err
-	}
-	return str, err
+	return rl.pattern.FormatString(t)
 }
 
 // Write satisfies the io.Writer interface. It writes to the
@@ -111,11 +125,7 @@ func (rl *RotateLogs) Write(p []byte) (n int, err error) {
 
 	// This filename contains the name of the "NEW" filename
 	// to log to, which may be newer than rl.currentFilename
-
-	filename, err := rl.genFilename()
-	if err != nil {
-		return 0, err
-	}
+	filename := rl.genFilename()
 
 	var out *os.File
 	if filename == rl.curFn { // Match!
@@ -144,7 +154,13 @@ func (rl *RotateLogs) Write(p []byte) (n int, err error) {
 
 		out = fh
 		if isNew {
-			rl.rotate(filename)
+			if err := rl.rotate(filename); err != nil {
+				// Failure to rotate is a problem, but it's really not a great
+				// idea to stop your application just because you couldn't rename
+				// your log. For now, we're just going to punt it and write to
+				// os.Stderr
+				fmt.Fprintf(os.Stderr, "failed to rotate: %s\n", err)
+			}
 		}
 	}
 
@@ -247,7 +263,7 @@ func (rl *RotateLogs) rotate(filename string) error {
 	}
 
 	if len(toUnlink) <= 0 {
-		return errors.New("nothing to unlink")
+		return nil
 	}
 
 	guard.Enable()

@@ -1,8 +1,8 @@
 package tools
 
 import (
-	"io"
 	"bytes"
+	"io"
 )
 
 func ToBytes(stream io.Reader) []byte {

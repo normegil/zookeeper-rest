@@ -71,8 +71,8 @@ func (z Zookeeper) refreshPathList() error {
 			return errors.Wrap(err, "Get content of path-id association node")
 		}
 
-		if "" != content {
-			err = json.Unmarshal([]byte(content), &paths)
+		if nil != content {
+			err = json.Unmarshal(content, &paths)
 			if nil != err {
 				return errors.Wrap(err, "Unmarshall content of path-id association node")
 			}

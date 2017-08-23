@@ -12,6 +12,7 @@ Port of [File::RotateLogs](https://metacpan.org/release/File-RotateLogs) from Pe
 
 ```go
 import (
+  "log"
   "net/http"
 
   apachelog "github.com/lestrrat/go-apache-logformat"
@@ -22,12 +23,16 @@ func main() {
   mux := http.NewServeMux()
   mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) { ... })
 
-  logf := rotatelogs.New(
+  logf, err := rotatelogs.New(
     "/path/to/access_log.%Y%m%d%H%M",
     rotatelogs.WithLinkName("/path/to/access_log"),
     rotatelogs.WithMaxAge(24 * time.Hour),
     rotatelogs.WithRotationTime(time.Hour),
   )
+  if err != nil {
+    log.Printf("failed to create rotatelogs: %s", err)
+    return
+  }
 
   http.ListenAndServe(":8080", apachelog.Wrap(mux, logf))
 }
@@ -56,7 +61,7 @@ import(
 )
   
 func main() {
-  rl := rotatelogs.NewRotateLogs("/path/to/access_log.%Y%m%d%H%M")
+  rl, _ := rotatelogs.NewRotateLogs("/path/to/access_log.%Y%m%d%H%M")
 
   log.SetOutput(rl)
 
@@ -91,6 +96,13 @@ calculations in UTC, you may specify rotatelogs.UTC
   )
 ```
 
+## Location
+
+This is an alternative to the `WithClock` option. Instead of providing an
+explicit clock, you can provide a location for you times. We will create
+a Clock object that produces times in your specified location, and configure
+the rotatelog to respect it.
+
 ## LinkName (default: "")
 
 Path where a symlink for the actual log file is placed. This allows you to 
@@ -123,7 +135,7 @@ Note: Remember to use time.Duration values.
   )
 ```
 
-## MaxAge (default: 0)
+## MaxAge (default: 7 days)
 
 Time to wait until old logs are purged. By default no logs are purged, which
 certainly isn't what you want.

@@ -9,6 +9,7 @@ import (
 )
 
 const ADDRESS string = "127.0.0.1"
+const BASE_PATH = "/rest/node"
 
 type Controller struct {
 	environment.Env
@@ -20,13 +21,13 @@ func (c Controller) Routes() []router.Route {
 		Logger:                c.Log(),
 	}
 	return []router.Route{
-		router.NewRoute("GET", "/rest/node", errCodeAssigner.New(c.load).Handle),
-		router.NewRoute("GET", "/rest/node/:nodeID", errCodeAssigner.New(c.load).Handle),
-		router.NewRoute("POST", "/rest/node", errCodeAssigner.New(c.create).Handle),
-		router.NewRoute("PUT", "/rest/node", errCodeAssigner.New(c.create).Handle),
-		router.NewRoute("POST", "/rest/node/:nodeID", errCodeAssigner.New(c.update).Handle),
-		router.NewRoute("PUT", "/rest/node/:nodeID", errCodeAssigner.New(c.update).Handle),
-		router.NewRoute("DELETE", "/rest/node/:nodeID", errCodeAssigner.New(c.remove).Handle),
+		router.NewRoute(GET_METHOD, GET_PATH, errCodeAssigner.New(c.load).Handle),
+		router.NewRoute(GET_ALL_METHOD, GET_ALL_PATH, errCodeAssigner.New(c.load).Handle),
+		router.NewRoute(CREATE_METHOD, CREATE_PATH, errCodeAssigner.New(c.create).Handle),
+		router.NewRoute("POST", CREATE_PATH, errCodeAssigner.New(c.create).Handle),
+		router.NewRoute(UPDATE_METHOD, UPDATE_PATH, errCodeAssigner.New(c.update).Handle),
+		router.NewRoute("PUT", UPDATE_PATH, errCodeAssigner.New(c.update).Handle),
+		router.NewRoute(DELETE_METHOD, DELETE_PATH, errCodeAssigner.New(c.remove).Handle),
 	}
 }
 
