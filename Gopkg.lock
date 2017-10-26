@@ -98,6 +98,12 @@
   version = "0.0.1"
 
 [[projects]]
+  name = "github.com/normegil/docker"
+  packages = ["."]
+  revision = "b8d045334d6b0341348264ebab0501197866c98e"
+  version = "0.0.1"
+
+[[projects]]
   name = "github.com/normegil/interval"
   packages = ["."]
   revision = "6a4db9690b8f4f448a02f7c286e6e68b45e00f9c"
@@ -226,6 +232,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "bf613b009d0d95ed867597a9e27ac23f945296cd508caec66ed60a67b7f5b086"
+  inputs-digest = "88d00a1edac2b25412e883e58e9fb1edaf31002f4dce14e7049e2ab60bf85511"
   solver-name = "gps-cdcl"
   solver-version = 1
