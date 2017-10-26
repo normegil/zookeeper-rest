@@ -1,6 +1,7 @@
 package command
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,17 +12,15 @@ import (
 	"github.com/docker/docker/api"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/versions"
-	cliconfig "github.com/docker/docker/cli/config"
-	"github.com/docker/docker/cli/config/configfile"
-	"github.com/docker/docker/cli/config/credentials"
 	cliflags "github.com/docker/docker/cli/flags"
+	"github.com/docker/docker/cliconfig"
+	"github.com/docker/docker/cliconfig/configfile"
+	"github.com/docker/docker/cliconfig/credentials"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/dockerversion"
 	dopts "github.com/docker/docker/opts"
 	"github.com/docker/go-connections/sockets"
 	"github.com/docker/go-connections/tlsconfig"
-	"github.com/docker/notary/passphrase"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
 )
@@ -33,29 +32,25 @@ type Streams interface {
 	Err() io.Writer
 }
 
-// Cli represents the docker command line client.
-type Cli interface {
-	Client() client.APIClient
-	Out() *OutStream
-	Err() io.Writer
-	In() *InStream
-	ConfigFile() *configfile.ConfigFile
-}
-
-// DockerCli is an instance the docker command line client.
+// DockerCli represents the docker command line client.
 // Instances of the client can be returned from NewDockerCli.
 type DockerCli struct {
-	configFile     *configfile.ConfigFile
-	in             *InStream
-	out            *OutStream
-	err            io.Writer
-	keyFile        string
-	client         client.APIClient
-	defaultVersion string
-	server         ServerInfo
+	configFile      *configfile.ConfigFile
+	in              *InStream
+	out             *OutStream
+	err             io.Writer
+	keyFile         string
+	client          client.APIClient
+	hasExperimental bool
+	defaultVersion  string
 }
 
-// DefaultVersion returns api.defaultVersion or DOCKER_API_VERSION if specified.
+// HasExperimental returns true if experimental features are accessible.
+func (cli *DockerCli) HasExperimental() bool {
+	return cli.hasExperimental
+}
+
+// DefaultVersion returns api.defaultVersion of DOCKER_API_VERSION if specified.
 func (cli *DockerCli) DefaultVersion() string {
 	return cli.defaultVersion
 }
@@ -90,12 +85,6 @@ func (cli *DockerCli) ShowHelp(cmd *cobra.Command, args []string) error {
 // ConfigFile returns the ConfigFile
 func (cli *DockerCli) ConfigFile() *configfile.ConfigFile {
 	return cli.configFile
-}
-
-// ServerInfo returns the server version details for the host this client is
-// connected to
-func (cli *DockerCli) ServerInfo() ServerInfo {
-	return cli.server
 }
 
 // GetAllCredentials returns all of the credentials stored in all of the
@@ -154,26 +143,6 @@ func (cli *DockerCli) Initialize(opts *cliflags.ClientOptions) error {
 
 	var err error
 	cli.client, err = NewAPIClientFromFlags(opts.Common, cli.configFile)
-	if tlsconfig.IsErrEncryptedKey(err) {
-		var (
-			passwd string
-			giveup bool
-		)
-		passRetriever := passphrase.PromptRetrieverWithInOut(cli.In(), cli.Out(), nil)
-
-		for attempts := 0; tlsconfig.IsErrEncryptedKey(err); attempts++ {
-			// some code and comments borrowed from notary/trustmanager/keystore.go
-			passwd, giveup, err = passRetriever("private", "encrypted TLS private", false, attempts)
-			// Check if the passphrase retriever got an error or if it is telling us to give up
-			if giveup || err != nil {
-				return errors.Wrap(err, "private key is encrypted, but could not get passphrase")
-			}
-
-			opts.Common.TLSOptions.Passphrase = passwd
-			cli.client, err = NewAPIClientFromFlags(opts.Common, cli.configFile)
-		}
-	}
-
 	if err != nil {
 		return err
 	}
@@ -181,16 +150,13 @@ func (cli *DockerCli) Initialize(opts *cliflags.ClientOptions) error {
 	cli.defaultVersion = cli.client.ClientVersion()
 
 	if opts.Common.TrustKey == "" {
-		cli.keyFile = filepath.Join(cliconfig.Dir(), cliflags.DefaultTrustKeyFile)
+		cli.keyFile = filepath.Join(cliconfig.ConfigDir(), cliflags.DefaultTrustKeyFile)
 	} else {
 		cli.keyFile = opts.Common.TrustKey
 	}
 
 	if ping, err := cli.client.Ping(context.Background()); err == nil {
-		cli.server = ServerInfo{
-			HasExperimental: ping.Experimental,
-			OSType:          ping.OSType,
-		}
+		cli.hasExperimental = ping.Experimental
 
 		// since the new header was added in 1.25, assume server is 1.24 if header is not present.
 		if ping.APIVersion == "" {
@@ -202,15 +168,7 @@ func (cli *DockerCli) Initialize(opts *cliflags.ClientOptions) error {
 			cli.client.UpdateClientVersion(ping.APIVersion)
 		}
 	}
-
 	return nil
-}
-
-// ServerInfo stores details about the supported features and platform of the
-// server
-type ServerInfo struct {
-	HasExperimental bool
-	OSType          string
 }
 
 // NewDockerCli returns a DockerCli instance with IO output and error streams set by in, out and err.
@@ -221,7 +179,7 @@ func NewDockerCli(in io.ReadCloser, out, err io.Writer) *DockerCli {
 // LoadDefaultConfigFile attempts to load the default config file and returns
 // an initialized ConfigFile struct if none is found.
 func LoadDefaultConfigFile(err io.Writer) *configfile.ConfigFile {
-	configFile, e := cliconfig.Load(cliconfig.Dir())
+	configFile, e := cliconfig.Load(cliconfig.ConfigDir())
 	if e != nil {
 		fmt.Fprintf(err, "WARNING: Error loading config file:%v\n", e)
 	}
@@ -276,9 +234,8 @@ func newHTTPClient(host string, tlsOptions *tlsconfig.Options) (*http.Client, er
 		// let the api client configure the default transport.
 		return nil, nil
 	}
-	opts := *tlsOptions
-	opts.ExclusiveRootPools = true
-	config, err := tlsconfig.Client(opts)
+
+	config, err := tlsconfig.Client(*tlsOptions)
 	if err != nil {
 		return nil, err
 	}

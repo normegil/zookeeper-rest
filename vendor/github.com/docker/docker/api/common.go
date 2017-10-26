@@ -11,17 +11,17 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/pkg/ioutils"
 	"github.com/docker/docker/pkg/system"
 	"github.com/docker/libtrust"
-	"github.com/sirupsen/logrus"
 )
 
 // Common constants for daemon and client.
 const (
 	// DefaultVersion of Current REST API
-	DefaultVersion string = "1.29"
+	DefaultVersion string = "1.26"
 
 	// NoBaseImageSpecifier is the symbol used by the FROM
 	// command to specify that no base image is to be used.

@@ -11,7 +11,8 @@ import (
 
 	"rsc.io/letsencrypt"
 
-	logstash "github.com/bshuster-repo/logrus-logstash-hook"
+	log "github.com/Sirupsen/logrus"
+	"github.com/Sirupsen/logrus/formatters/logstash"
 	"github.com/bugsnag/bugsnag-go"
 	"github.com/docker/distribution/configuration"
 	"github.com/docker/distribution/context"
@@ -21,7 +22,6 @@ import (
 	"github.com/docker/distribution/uuid"
 	"github.com/docker/distribution/version"
 	gorhandlers "github.com/gorilla/handlers"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/yvasiyarov/gorelic"
 )

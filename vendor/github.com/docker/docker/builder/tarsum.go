@@ -104,8 +104,7 @@ func MakeTarSumContext(tarStream io.Reader) (ModifiableContext, error) {
 		return nil, err
 	}
 
-	err = chrootarchive.Untar(sum, root, nil)
-	if err != nil {
+	if err := chrootarchive.Untar(sum, root, nil); err != nil {
 		return nil, err
 	}
 

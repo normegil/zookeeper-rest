@@ -11,7 +11,6 @@ import (
 	"github.com/docker/docker/opts"
 	"github.com/docker/docker/pkg/system"
 	runconfigopts "github.com/docker/docker/runconfig/opts"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
 )
@@ -22,9 +21,9 @@ type createOptions struct {
 	labels opts.ListOpts
 }
 
-func newSecretCreateCommand(dockerCli command.Cli) *cobra.Command {
+func newSecretCreateCommand(dockerCli *command.DockerCli) *cobra.Command {
 	createOpts := createOptions{
-		labels: opts.NewListOpts(opts.ValidateEnv),
+		labels: opts.NewListOpts(runconfigopts.ValidateEnv),
 	}
 
 	cmd := &cobra.Command{
@@ -43,7 +42,7 @@ func newSecretCreateCommand(dockerCli command.Cli) *cobra.Command {
 	return cmd
 }
 
-func runSecretCreate(dockerCli command.Cli, options createOptions) error {
+func runSecretCreate(dockerCli *command.DockerCli, options createOptions) error {
 	client := dockerCli.Client()
 	ctx := context.Background()
 
@@ -59,7 +58,7 @@ func runSecretCreate(dockerCli command.Cli, options createOptions) error {
 
 	secretData, err := ioutil.ReadAll(in)
 	if err != nil {
-		return errors.Errorf("Error reading content from %q: %v", options.file, err)
+		return fmt.Errorf("Error reading content from %q: %v", options.file, err)
 	}
 
 	spec := swarm.SecretSpec{

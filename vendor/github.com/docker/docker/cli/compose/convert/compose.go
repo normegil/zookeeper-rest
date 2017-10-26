@@ -2,7 +2,6 @@ package convert
 
 import (
 	"io/ioutil"
-	"strings"
 
 	"github.com/docker/docker/api/types"
 	networktypes "github.com/docker/docker/api/types/network"
@@ -23,11 +22,6 @@ type Namespace struct {
 // Scope prepends the namespace to a name
 func (n Namespace) Scope(name string) string {
 	return n.name + "_" + name
-}
-
-// Descope returns the name without the namespace prefix
-func (n Namespace) Descope(name string) string {
-	return strings.TrimPrefix(name, n.name+"_")
 }
 
 // Name returns the name of the namespace
@@ -51,14 +45,19 @@ func AddStackLabel(namespace Namespace, labels map[string]string) map[string]str
 
 type networkMap map[string]composetypes.NetworkConfig
 
-// Networks from the compose-file type to the engine API type
-func Networks(namespace Namespace, networks networkMap, servicesNetworks map[string]struct{}) (map[string]types.NetworkCreate, []string) {
+// Networks converts networks from the compose-file type to the engine API type
+func Networks(
+	namespace Namespace,
+	networks networkMap,
+	servicesNetworks map[string]struct{},
+) (map[string]types.NetworkCreate, []string) {
 	if networks == nil {
 		networks = make(map[string]composetypes.NetworkConfig)
 	}
 
 	externalNetworks := []string{}
 	result := make(map[string]types.NetworkCreate)
+
 	for internalName := range servicesNetworks {
 		network := networks[internalName]
 		if network.External.External {
@@ -67,11 +66,10 @@ func Networks(namespace Namespace, networks networkMap, servicesNetworks map[str
 		}
 
 		createOpts := types.NetworkCreate{
-			Labels:     AddStackLabel(namespace, network.Labels),
-			Driver:     network.Driver,
-			Options:    network.DriverOpts,
-			Internal:   network.Internal,
-			Attachable: network.Attachable,
+			Labels:   AddStackLabel(namespace, network.Labels),
+			Driver:   network.Driver,
+			Options:  network.DriverOpts,
+			Internal: network.Internal,
 		}
 
 		if network.Ipam.Driver != "" || len(network.Ipam.Config) > 0 {
