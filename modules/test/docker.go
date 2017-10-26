@@ -7,20 +7,20 @@ import (
 )
 
 type TestLogger struct {
-	testing.TB
+	t testing.TB
 }
 
 func (l *TestLogger) Print(v ...interface{}) {
-	t.Log(v...)
+	l.t.Log(v...)
 }
 
 func (l *TestLogger) Printf(format string, v ...interface{}) {
-	t.Logf(v...)
+	l.t.Logf(format, v...)
 }
 
 func NewDocker(t testing.TB, options docker.Options) (*docker.ContainerInfo, func()) {
 	if nil == options.Logger {
-		options.Logger = TestLogger{t}
+		options.Logger = &TestLogger{t}
 	}
 	info, closeFn, err := docker.New(options)
 	if err != nil {
