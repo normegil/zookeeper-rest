@@ -12,7 +12,8 @@ import (
 	"github.com/docker/docker/api/types/container"
 	docker "github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
-	"github.com/normegil/zookeeper-rest/modules/tools"
+	"github.com/normegil/connectionutils"
+	"github.com/normegil/interval"
 	"github.com/pkg/errors"
 	uuid "github.com/satori/go.uuid"
 )
@@ -139,8 +140,8 @@ func selectPorts(t testing.TB, address net.IP, possiblePorts []PortBinding) map[
 	t.Logf("Ports to select: %+v", possiblePorts)
 	toReturn := make(map[PortBinding]int)
 	for _, binding := range possiblePorts {
-		interval := tools.Test_ParseIntervalInteger(t, binding.ExternalInterval)
-		selected := tools.SelectPortExcluding(address, *interval, used)
+		interval := interval.Test_ParseIntervalInteger(t, binding.ExternalInterval)
+		selected := connectionutils.SelectPortExcluding(address, *interval, used)
 		toReturn[binding] = selected.Port
 	}
 	t.Logf("Ports Selected: %+v", toReturn)

@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/normegil/streamutils"
 	apiErrors "github.com/normegil/zookeeper-rest/modules/errors"
-	"github.com/normegil/zookeeper-rest/modules/tools"
 	"github.com/pkg/errors"
 )
 
@@ -17,7 +17,7 @@ const (
 
 func (c Controller) create(w http.ResponseWriter, r *http.Request, p httprouter.Params) error {
 	var body map[string]interface{}
-	err := json.Unmarshal(tools.ToBytes(r.Body), &body)
+	err := json.Unmarshal(streamutils.ToBytes(r.Body), &body)
 	if nil != err {
 		return errors.Wrap(err, "Error when unmarshalling Request body")
 	}
@@ -51,7 +51,7 @@ func (c Controller) update(w http.ResponseWriter, r *http.Request, p httprouter.
 	}
 
 	var body map[string]interface{}
-	err = json.Unmarshal(tools.ToBytes(r.Body), &body)
+	err = json.Unmarshal(streamutils.ToBytes(r.Body), &body)
 	if nil != err {
 		return errors.Wrap(err, "Error when unmarshalling request body")
 	}

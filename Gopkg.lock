@@ -92,6 +92,24 @@
   revision = "06020f85339e21b2478f756a78e295255ffa4d6a"
 
 [[projects]]
+  name = "github.com/normegil/connectionutils"
+  packages = ["."]
+  revision = "a7257842129789f9c6cefcb61ce185812ab54601"
+  version = "0.0.1"
+
+[[projects]]
+  name = "github.com/normegil/interval"
+  packages = ["."]
+  revision = "6a4db9690b8f4f448a02f7c286e6e68b45e00f9c"
+  version = "0.0.1"
+
+[[projects]]
+  name = "github.com/normegil/streamutils"
+  packages = ["."]
+  revision = "45d21ba9aaa21f2a8c31670fe70ab172d9df7226"
+  version = "0.0.1"
+
+[[projects]]
   name = "github.com/pelletier/go-toml"
   packages = ["."]
   revision = "16398bac157da96aa88f98a2df640c7f32af1da2"
@@ -208,6 +226,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ad2110b84160b059211fa3df533e7528841ff0e6fb667225ed9a1e770805096a"
+  inputs-digest = "bf613b009d0d95ed867597a9e27ac23f945296cd508caec66ed60a67b7f5b086"
   solver-name = "gps-cdcl"
   solver-version = 1
