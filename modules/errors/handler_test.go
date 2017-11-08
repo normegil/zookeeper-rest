@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/normegil/zookeeper-rest/modules/formats"
+	errorFormat "github.com/normegil/formats/error"
 	"github.com/normegil/zookeeper-rest/modules/test"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -39,7 +39,7 @@ func TestHandle(t *testing.T) {
 					break
 				}
 			}
-			expectedErr.Err = formats.Error{testdata.err.Error()}
+			expectedErr.Err = errorFormat.Error{testdata.err.Error()}
 			if expectedErr.HTTPStatus != resp.Code {
 				t.Error(test.Format("HTTP Status doesn't correspond.", strconv.Itoa(expectedErr.HTTPStatus), strconv.Itoa(resp.Code)))
 			}

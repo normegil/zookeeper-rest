@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/normegil/zookeeper-rest/modules/formats"
+	urlFormat "github.com/normegil/formats/url"
 	"github.com/pkg/errors"
 )
 
@@ -46,7 +46,7 @@ func loadErrorRessources(path string) []ErrorResponse {
 		loadedResponses = append(loadedResponses, ErrorResponse{
 			Code:       code,
 			HTTPStatus: httpStatus,
-			MoreInfo:   formats.URL{moreInfo},
+			MoreInfo:   urlFormat.URL{moreInfo},
 			Message:    row[2],
 		})
 	}

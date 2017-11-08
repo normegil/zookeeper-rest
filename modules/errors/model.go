@@ -5,7 +5,9 @@ import (
 
 	"encoding/json"
 
-	"github.com/normegil/zookeeper-rest/modules/formats"
+	errorFormat "github.com/normegil/formats/error"
+	timeFormat "github.com/normegil/formats/time"
+	urlFormat "github.com/normegil/formats/url"
 	"github.com/pkg/errors"
 )
 
@@ -31,12 +33,12 @@ func NewErrWithCode(code int, e error) ErrWithCode {
 }
 
 type ErrorResponse struct {
-	HTTPStatus int            `json:"http status"`
-	Code       int            `json:"code"`
-	Message    string         `json:"message"`
-	MoreInfo   formats.URL    `json:"more info"`
-	Time       formats.Time   `json:"time"`
-	Err        marshableError `json:"error"`
+	HTTPStatus int             `json:"http status"`
+	Code       int             `json:"code"`
+	Message    string          `json:"message"`
+	MoreInfo   urlFormat.URL   `json:"more info"`
+	Time       timeFormat.Time `json:"time"`
+	Err        marshableError  `json:"error"`
 }
 
 func (e ErrorResponse) String() string {
@@ -65,7 +67,7 @@ func (e *ErrorResponse) UnmarshalJSON(b []byte) error {
 	if err = json.Unmarshal([]byte(*objRawMessages["time"]), &e.Time); err != nil {
 		return errors.Wrap(err, "Parsing Time")
 	}
-	errForResponse := formats.Error{}
+	errForResponse := errorFormat.Error{}
 	err = json.Unmarshal([]byte(*objRawMessages["error"]), &errForResponse)
 	if err != nil {
 		return errors.Wrap(err, "Parsing Error (response field)")

@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/normegil/zookeeper-rest/modules/formats"
+	urlFormat "github.com/normegil/formats/url"
 	"github.com/pkg/errors"
 	uuid "github.com/satori/go.uuid"
 )
@@ -70,10 +70,10 @@ func (c Controller) load(w http.ResponseWriter, r *http.Request, params httprout
 	}
 	c.Log().WithField("childs", ids).WithField("paths", childPaths).Debugf("Child IDs: %s", path)
 
-	childURLs := make(map[string]formats.URL)
+	childURLs := make(map[string]urlFormat.URL)
 	for path, key := range ids {
 		newURL, err := url.Parse(baseURL + "/" + key)
-		childURLs[path] = formats.URL{newURL}
+		childURLs[path] = urlFormat.URL{newURL}
 		if nil != err {
 			return errors.Wrapf(err, "Cannot parse URL from %s", path)
 		}
@@ -81,7 +81,7 @@ func (c Controller) load(w http.ResponseWriter, r *http.Request, params httprout
 
 	nodeResp := nodeResponse{
 		ID:      id,
-		URL:     formats.URL{currentURL},
+		URL:     urlFormat.URL{currentURL},
 		Path:    node.Path(),
 		Content: string(node.Content()),
 		Childs:  childURLs,
@@ -98,10 +98,10 @@ func (c Controller) load(w http.ResponseWriter, r *http.Request, params httprout
 
 type nodeResponse struct {
 	ID      string
-	URL     formats.URL
+	URL     urlFormat.URL
 	Path    string
 	Content string
-	Childs  map[string]formats.URL
+	Childs  map[string]urlFormat.URL
 }
 
 func (n nodeResponse) Equals(other nodeResponse) bool {

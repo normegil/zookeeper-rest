@@ -5,7 +5,9 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/normegil/zookeeper-rest/modules/formats"
+	errorFormat "github.com/normegil/formats/error"
+	timeFormat "github.com/normegil/formats/time"
+	urlFormat "github.com/normegil/formats/url"
 )
 
 const DEFAULT_CODE = 500
@@ -15,7 +17,7 @@ func toResponse(e error) *ErrorResponse {
 	fmt.Printf("%+v\n", eWithCode)
 	eMarshallable, isMarshable := e.(marshableError)
 	if !isMarshable {
-		eMarshallable = formats.Error{e.Error()}
+		eMarshallable = errorFormat.Error{e.Error()}
 	}
 
 	for _, defResp := range predefinedErrors {
@@ -25,7 +27,7 @@ func toResponse(e error) *ErrorResponse {
 				HTTPStatus: defResp.HTTPStatus,
 				Message:    defResp.Message,
 				MoreInfo:   defResp.MoreInfo,
-				Time:       formats.Time(time.Now()),
+				Time:       timeFormat.Time(time.Now()),
 				Err:        eMarshallable,
 			}
 		}
@@ -38,9 +40,9 @@ func toResponse(e error) *ErrorResponse {
 	return &ErrorResponse{
 		Code:       50000,
 		HTTPStatus: 500,
-		Err:        formats.Error{e.Error()},
-		MoreInfo:   formats.URL{moreInfo},
-		Time:       formats.Time(time.Now()),
+		Err:        errorFormat.Error{e.Error()},
+		MoreInfo:   urlFormat.URL{moreInfo},
+		Time:       timeFormat.Time(time.Now()),
 		Message:    "Error was not found in the error ressources. Generated a default error.",
 	}
 }
