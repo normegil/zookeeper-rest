@@ -104,6 +104,12 @@
   version = "0.0.1"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/normegil/golog"
+  packages = ["."]
+  revision = "56d8bdf6d91409e27a1f269267b58e0300344ece"
+
+[[projects]]
   name = "github.com/normegil/interval"
   packages = ["."]
   revision = "6a4db9690b8f4f448a02f7c286e6e68b45e00f9c"
@@ -238,6 +244,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "bb62b6382b6ac6eb7f253e320f68792c5d4ed22de10fe8f906b72cd006646245"
+  inputs-digest = "ebc7a6e5c4c4faa9f8a5618286aedbf8ee4c85df09415e79d99fc38a65829599"
   solver-name = "gps-cdcl"
   solver-version = 1

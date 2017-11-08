@@ -5,9 +5,9 @@ import (
 	"strconv"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/normegil/zookeeper-rest/modules/database/mongo"
 	"github.com/normegil/zookeeper-rest/modules/environment"
 	"github.com/normegil/zookeeper-rest/modules/middleware"
+	"github.com/normegil/zookeeper-rest/modules/model/dao"
 	"github.com/pkg/errors"
 )
 
@@ -48,8 +48,8 @@ func (r *Router) Register(routes []Route) error {
 }
 
 func (r *Router) Listen(port int) error {
-	dao := &mongo.MongoUserDAO{r.Env.Session(), ""}
-	handler := middleware.URLContructor(middleware.RequestLogger(r.Env.Log(), middleware.RequestAuthenticator(r.Env.Log(), dao, r.router)))
+	userDAO := &dao.MongoUserDAO{r.Env.Session(), ""}
+	handler := middleware.URLContructor(middleware.RequestLogger(r.Env.Log(), middleware.RequestAuthenticator(r.Env.Log(), userDAO, r.router)))
 
 	r.Log().WithField("port", port).Info("Launching server")
 	if err := http.ListenAndServe(":"+strconv.Itoa(port), handler); nil != err {

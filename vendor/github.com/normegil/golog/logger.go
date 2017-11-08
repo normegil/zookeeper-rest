@@ -14,17 +14,23 @@ import (
 )
 
 type Options struct {
+	// Verbose controls the verbosity of the log (Set to true if you want a DebugLevel logger)
 	Verbose bool
 	File    FileOptions
 	DB      MongoOptions
 }
 
+// FileOptions controls the options that revolve around file logging. If it's not specified, file won't be created
 type FileOptions struct {
+	//FolderPath is the path to the folder where the log files will be stored
 	FolderPath string
-	FileName   string
-	MaxAge     time.Duration
+	//FileName is the filename prefix that will be used to create the log file. Suffix will be added to differentiate between log file types.
+	FileName string
+	//MaxAge is the dureation between rotations of the log files
+	MaxAge time.Duration
 }
 
+// MongoOptions controls the options that revolve around file logging. If it's not specified, file won't be created
 type MongoOptions struct {
 	URL      string
 	Database string
@@ -32,6 +38,7 @@ type MongoOptions struct {
 	Password string
 }
 
+// New create a new logrus logger & configure it based on Options
 func New(opts Options) (*logrus.Entry, error) {
 	log := logrus.NewEntry(logrus.New())
 	if opts.Verbose {

@@ -3,7 +3,7 @@ package zookeeper
 import (
 	"time"
 
-	"github.com/normegil/zookeeper-rest/modules/log"
+	log "github.com/normegil/golog"
 	"github.com/pkg/errors"
 	"github.com/samuel/go-zookeeper/zk"
 )

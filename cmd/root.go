@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
+	log "github.com/normegil/golog"
+	"github.com/normegil/mongo"
 	"github.com/normegil/zookeeper-rest/api/node"
-	"github.com/normegil/zookeeper-rest/modules/database/mongo"
 	"github.com/normegil/zookeeper-rest/modules/environment"
-	"github.com/normegil/zookeeper-rest/modules/log"
 	"github.com/normegil/zookeeper-rest/modules/zookeeper"
 	"github.com/normegil/zookeeper-rest/router"
 	"github.com/pkg/errors"

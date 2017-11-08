@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/normegil/zookeeper-rest/modules/log"
+	log "github.com/normegil/golog"
 	"github.com/normegil/zookeeper-rest/modules/test"
 	"github.com/pkg/errors"
 	"github.com/samuel/go-zookeeper/zk"

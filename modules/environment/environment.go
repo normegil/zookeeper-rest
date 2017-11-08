@@ -1,7 +1,7 @@
 package environment
 
 import (
-	"github.com/normegil/zookeeper-rest/modules/database/mongo"
+	"github.com/normegil/mongo"
 	"github.com/normegil/zookeeper-rest/modules/zookeeper"
 	"github.com/sirupsen/logrus"
 )
