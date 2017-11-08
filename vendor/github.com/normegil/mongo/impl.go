@@ -4,6 +4,7 @@ import (
 	mgo "gopkg.in/mgo.v2"
 )
 
+// NewSession will create a new Session using an mgo.Session and a default Database
 func NewSession(session *mgo.Session, databaseName string) Session {
 	return &sessionImpl{
 		Session:      session,

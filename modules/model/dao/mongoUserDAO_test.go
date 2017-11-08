@@ -1,11 +1,11 @@
-package mongo_test
+package dao_test
 
 import (
 	"testing"
 
-	"github.com/normegil/zookeeper-rest/modules/database/mongo"
+	"github.com/normegil/mongo"
 	"github.com/normegil/zookeeper-rest/modules/model"
-	daoPkg "github.com/normegil/zookeeper-rest/modules/model/dao"
+	"github.com/normegil/zookeeper-rest/modules/model/dao"
 	"github.com/normegil/zookeeper-rest/modules/test"
 	"github.com/pkg/errors"
 	uuid "github.com/satori/go.uuid"
@@ -22,7 +22,7 @@ func TestMongoUserDAO(t *testing.T) {
 	dbNameWithoutCollection := "zookeeper-rest-no-collection"
 	session, closeFn := mongo.Test_NewMongoSession(t)
 	defer closeFn()
-	mongo.Test_Insert(t, session, []mongo.Test_MongoData{
+	err := mongo.Insert(session, []mongo.MongoData{
 		{
 			Database:   dbName,
 			Collection: "users",
@@ -32,10 +32,13 @@ func TestMongoUserDAO(t *testing.T) {
 			Database: dbNameWithoutCollection,
 		},
 	})
+	if err != nil {
+		t.Fatal(errors.Wrap(err, "Insertion"))
+	}
 
 	t.Run("Load", func(t *testing.T) {
-		dao := mongo.MongoUserDAO{session, dbName}
-		result, err := dao.Load(user.Name())
+		userDAO := dao.MongoUserDAO{session, dbName}
+		result, err := userDAO.Load(user.Name())
 		if nil != err {
 			t.Fatal(errors.Wrap(err, "Error while loading user '"+user.Name()+"'"))
 		}
@@ -47,8 +50,8 @@ func TestMongoUserDAO(t *testing.T) {
 	})
 
 	t.Run("Load inexisting database", func(t *testing.T) {
-		dao := mongo.MongoUserDAO{session, uuid.NewV4().String()}
-		result, err := dao.Load(uuid.NewV4().String())
+		userDAO := dao.MongoUserDAO{session, uuid.NewV4().String()}
+		result, err := userDAO.Load(uuid.NewV4().String())
 		if nil != err {
 			t.Fatal(errors.Wrap(err, "Error while loading user"))
 		}
@@ -59,8 +62,8 @@ func TestMongoUserDAO(t *testing.T) {
 	})
 
 	t.Run("Inexisting collection", func(t *testing.T) {
-		dao := mongo.MongoUserDAO{session, dbNameWithoutCollection}
-		result, err := dao.Load(uuid.NewV4().String())
+		userDAO := dao.MongoUserDAO{session, dbNameWithoutCollection}
+		result, err := userDAO.Load(uuid.NewV4().String())
 		if nil != err {
 			t.Fatal(errors.Wrap(err, "Error while loading user"))
 		}
@@ -70,8 +73,8 @@ func TestMongoUserDAO(t *testing.T) {
 	})
 
 	t.Run("Inexisting user", func(t *testing.T) {
-		dao := mongo.MongoUserDAO{session, dbName}
-		result, err := dao.Load(uuid.NewV4().String())
+		userDAO := dao.MongoUserDAO{session, dbName}
+		result, err := userDAO.Load(uuid.NewV4().String())
 		if nil != err {
 			t.Fatal(errors.Wrap(err, "Error while loading user"))
 		}
@@ -82,8 +85,8 @@ func TestMongoUserDAO(t *testing.T) {
 	})
 
 	t.Run("Conformity to interface", func(t *testing.T) {
-		dao := &mongo.MongoUserDAO{session, dbName}
-		daoPkg.Test_Load(t, dao)
+		userDAO := &dao.MongoUserDAO{session, dbName}
+		dao.Test_Load(t, userDAO)
 	})
 
 }

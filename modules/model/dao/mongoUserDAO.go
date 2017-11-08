@@ -1,6 +1,7 @@
-package mongo
+package dao
 
 import (
+	"github.com/normegil/mongo"
 	"github.com/normegil/zookeeper-rest/modules/model"
 	"github.com/pkg/errors"
 	"gopkg.in/mgo.v2"
@@ -8,7 +9,7 @@ import (
 )
 
 type MongoUserDAO struct {
-	Connection Session
+	Connection mongo.Session
 	Database   string
 }
 

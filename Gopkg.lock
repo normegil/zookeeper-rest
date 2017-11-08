@@ -110,6 +110,12 @@
   version = "0.0.1"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/normegil/mongo"
+  packages = ["."]
+  revision = "5896f72c315c66027d0b1d1a0dc5e55715a2986d"
+
+[[projects]]
   name = "github.com/normegil/streamutils"
   packages = ["."]
   revision = "45d21ba9aaa21f2a8c31670fe70ab172d9df7226"
@@ -232,6 +238,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "88d00a1edac2b25412e883e58e9fb1edaf31002f4dce14e7049e2ab60bf85511"
+  inputs-digest = "bb62b6382b6ac6eb7f253e320f68792c5d4ed22de10fe8f906b72cd006646245"
   solver-name = "gps-cdcl"
   solver-version = 1
