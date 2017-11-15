@@ -105,6 +105,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/normegil/formats"
+  packages = ["error","time","url"]
+  revision = "d8e35934f96a18da970ae338566f8a58192edd3d"
+
+[[projects]]
+  branch = "master"
   name = "github.com/normegil/golog"
   packages = ["."]
   revision = "56d8bdf6d91409e27a1f269267b58e0300344ece"
@@ -120,6 +126,12 @@
   name = "github.com/normegil/mongo"
   packages = ["."]
   revision = "5896f72c315c66027d0b1d1a0dc5e55715a2986d"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/normegil/resterrors"
+  packages = ["."]
+  revision = "0ffb9e930a42a11c65b02b68673ba3d73551a697"
 
 [[projects]]
   name = "github.com/normegil/streamutils"
@@ -244,6 +256,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ebc7a6e5c4c4faa9f8a5618286aedbf8ee4c85df09415e79d99fc38a65829599"
+  inputs-digest = "695b15e97ae0906e39ab8846d29a1bbf6d765a1603e3607e9a4987325437d2e0"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -4,7 +4,8 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/normegil/zookeeper-rest/modules/errors"
+	"github.com/normegil/resterrors"
+	definitions "github.com/normegil/zookeeper-rest/modules/errors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -35,7 +36,9 @@ func (e ErrorHandler) Handle(w http.ResponseWriter, r *http.Request, p httproute
 		return
 	}
 
-	errors.Handler{e.logger}.Handle(w, err)
+	stack := resterrors.Stacks(err)
+	e.logger.WithField("error", err).WithField("stack", stack).Info("Error")
+	resterrors.Handler{definitions.Definitions(), definitions.DEFAULT_ERROR_CODE}.Handle(w, err)
 }
 
 type ErrorHandlerFactory struct {

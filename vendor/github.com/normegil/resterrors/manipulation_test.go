@@ -1,16 +1,15 @@
-package errors_test
+package resterrors_test
 
 import (
 	"testing"
 
-	errPkg "github.com/normegil/zookeeper-rest/modules/errors"
-	"github.com/normegil/zookeeper-rest/modules/test"
+	"github.com/normegil/resterrors"
 	"github.com/pkg/errors"
 )
 
 func TestSearchThroughCauses(t *testing.T) {
 	testErr := errors.New("Test")
-	errCode := errPkg.NewErrWithCode(100, testErr)
+	errCode := resterrors.NewErrWithCode(100, testErr)
 	testcases := []struct {
 		Input          error
 		Expected       error
@@ -27,7 +26,7 @@ func TestSearchThroughCauses(t *testing.T) {
 			Input:    errors.Wrapf(errors.Wrapf(errCode, ""), ""),
 			Expected: errCode,
 			SearchFunction: func(e error) bool {
-				_, ok := e.(errPkg.ErrWithCode)
+				_, ok := e.(resterrors.ErrWithCode)
 				return ok
 			},
 		},
@@ -35,7 +34,7 @@ func TestSearchThroughCauses(t *testing.T) {
 			Input:    nil,
 			Expected: nil,
 			SearchFunction: func(e error) bool {
-				_, ok := e.(errPkg.ErrWithCode)
+				_, ok := e.(resterrors.ErrWithCode)
 				return ok
 			},
 		},
@@ -43,16 +42,16 @@ func TestSearchThroughCauses(t *testing.T) {
 			Input:    errors.Wrapf(testErr, ""),
 			Expected: nil,
 			SearchFunction: func(e error) bool {
-				_, ok := e.(errPkg.ErrWithCode)
+				_, ok := e.(resterrors.ErrWithCode)
 				return ok
 			},
 		},
 	}
 	for _, testdata := range testcases {
 		t.Run("", func(t *testing.T) {
-			found := errPkg.SearchThroughCauses(testdata.Input, testdata.SearchFunction)
+			found := resterrors.SearchThroughCauses(testdata.Input, testdata.SearchFunction)
 			if testdata.Expected != found {
-				t.Error(test.Format("Searched error was not the found error", testdata.Expected, found))
+				t.Error("Searched error (%+v) was not the found error (%+v)", found, testdata.Expected)
 			}
 		})
 	}

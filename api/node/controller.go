@@ -1,9 +1,9 @@
 package node
 
 import (
-	"github.com/normegil/zookeeper-rest/modules/environment"
-	"github.com/normegil/zookeeper-rest/modules/errors"
+	"github.com/normegil/resterrors"
 	"github.com/normegil/zookeeper-rest/modules/middleware"
+	"github.com/normegil/zookeeper-rest/modules/model"
 	"github.com/normegil/zookeeper-rest/router"
 	"github.com/samuel/go-zookeeper/zk"
 )
@@ -12,7 +12,7 @@ const ADDRESS string = "127.0.0.1"
 const BASE_PATH = "/rest/node"
 
 type Controller struct {
-	environment.Env
+	model.Env
 }
 
 func (c Controller) Routes() []router.Route {
@@ -36,6 +36,6 @@ func (c Controller) assignCode(err error) error {
 	default:
 		return err
 	case zk.ErrNoServer:
-		return errors.NewErrWithCode(50301, err)
+		return resterrors.NewErrWithCode(50301, err)
 	}
 }

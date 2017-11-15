@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/normegil/zookeeper-rest/modules/errors"
+	"github.com/normegil/resterrors"
 	"github.com/normegil/zookeeper-rest/modules/middleware"
 	"github.com/normegil/zookeeper-rest/modules/model"
 	"github.com/normegil/zookeeper-rest/modules/model/dao"
@@ -70,7 +70,7 @@ func TestRequestAuthenticator(t *testing.T) {
 					t.Error(test.Format("Loaded user doesn't correspond to requested user", testdata.toAuthenticate.String(), usr.String()))
 				}
 			} else {
-				resp := &errors.ErrorResponse{}
+				resp := &resterrors.ErrorResponse{}
 				err := json.Unmarshal(result.Body.Bytes(), resp)
 				if err != nil {
 					t.Fatal(err)

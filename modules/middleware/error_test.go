@@ -9,7 +9,8 @@ import (
 	"testing"
 
 	"github.com/julienschmidt/httprouter"
-	errorsModule "github.com/normegil/zookeeper-rest/modules/errors"
+	"github.com/normegil/resterrors"
+	definitions "github.com/normegil/zookeeper-rest/modules/errors"
 	"github.com/normegil/zookeeper-rest/modules/middleware"
 	"github.com/normegil/zookeeper-rest/modules/test"
 	"github.com/sirupsen/logrus"
@@ -53,7 +54,7 @@ func TestErrorHandler(t *testing.T) {
 			CodeToAssign: 40001,
 			ExpectedBody: "40001",
 			ErrorHandler: func(w http.ResponseWriter, err error) {
-				e := err.(errorsModule.ErrWithCode)
+				e := err.(resterrors.ErrWithCode)
 				w.Write([]byte(strconv.Itoa(e.Code())))
 			},
 		},
@@ -69,7 +70,7 @@ func TestErrorHandler(t *testing.T) {
 			result := httptest.NewRecorder()
 			factory.New(EndpointForTest{testdata.Error}.Handle).Handle(result, httptest.NewRequest("GET", "http://localhost/", strings.NewReader("")), nil)
 
-			expected := getExpectedBody(testdata.ExpectedBody, testdata.Error, testdata.CodeToAssign)
+			expected := getExpectedBody(t, testdata.ExpectedBody, testdata.Error, testdata.CodeToAssign)
 			if expected != string(result.Body.Bytes()) {
 				t.Error(test.Format("Response doesn't correspond to expected output", testdata.ExpectedBody, string(result.Body.Bytes())))
 			}
@@ -81,7 +82,7 @@ type CodeAssignerForTest int
 
 func (c CodeAssignerForTest) Handle(err error) error {
 	if 0 != c {
-		return errorsModule.NewErrWithCode(int(c), err)
+		return resterrors.NewErrWithCode(int(c), err)
 	}
 	return err
 }
@@ -98,15 +99,18 @@ func (e EndpointForTest) Handle(w http.ResponseWriter, _ *http.Request, _ httpro
 	return nil
 }
 
-func getExpectedBody(expectedBody string, err error, codeToAssign int) string {
+func getExpectedBody(t testing.TB, expectedBody string, err error, codeToAssign int) string {
 	expected := expectedBody
 	if "" == expectedBody {
 		errToHandle := err
 		if 0 != codeToAssign {
-			errToHandle = errorsModule.NewErrWithCode(codeToAssign, err)
+			errToHandle = resterrors.NewErrWithCode(codeToAssign, err)
 		}
 		expectedResponse := httptest.NewRecorder()
-		errorsModule.Handler{logrus.New()}.Handle(expectedResponse, errToHandle)
+		err := resterrors.Handler{definitions.Definitions(), definitions.DEFAULT_ERROR_CODE}.Handle(expectedResponse, errToHandle)
+		if err != nil {
+			t.Fatal(err)
+		}
 		expected = string(expectedResponse.Body.Bytes())
 	}
 	return expected

@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/normegil/resterrors"
 	"github.com/normegil/streamutils"
-	apiErrors "github.com/normegil/zookeeper-rest/modules/errors"
 	"github.com/pkg/errors"
 )
 
@@ -24,15 +24,15 @@ func (c Controller) create(w http.ResponseWriter, r *http.Request, p httprouter.
 
 	path, isString := body["path"].(string)
 	if "" == path {
-		return apiErrors.NewErrWithCode(40001, errors.New("Resource 'path' not specified."))
+		return resterrors.NewErrWithCode(40001, errors.New("Resource 'path' not specified."))
 	}
 	if !isString {
-		return apiErrors.NewErrWithCode(40001, errors.New("Resource 'path' found but type not 'string'."))
+		return resterrors.NewErrWithCode(40001, errors.New("Resource 'path' found but type not 'string'."))
 	}
 
 	content, isString := body["content"].(string)
 	if !isString {
-		return apiErrors.NewErrWithCode(40001, errors.New("Resource 'content' found but type not 'string'."))
+		return resterrors.NewErrWithCode(40001, errors.New("Resource 'content' found but type not 'string'."))
 	}
 
 	c.Log().WithField("path", path).Debug("Creating node")
@@ -58,7 +58,7 @@ func (c Controller) update(w http.ResponseWriter, r *http.Request, p httprouter.
 
 	content, isString := body["content"].(string)
 	if !isString {
-		return apiErrors.NewErrWithCode(40001, errors.New("Resource 'content' found but type not 'string'."))
+		return resterrors.NewErrWithCode(40001, errors.New("Resource 'content' found but type not 'string'."))
 	}
 	c.Log().WithField("path", path).Debug("Updating node")
 	return c.Zookeeper().Set(path, []byte(content))

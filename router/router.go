@@ -5,18 +5,18 @@ import (
 	"strconv"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/normegil/zookeeper-rest/modules/environment"
 	"github.com/normegil/zookeeper-rest/modules/middleware"
+	"github.com/normegil/zookeeper-rest/modules/model"
 	"github.com/normegil/zookeeper-rest/modules/model/dao"
 	"github.com/pkg/errors"
 )
 
 type Router struct {
-	environment.Env
+	model.Env
 	router *httprouter.Router
 }
 
-func New(env environment.Env) *Router {
+func New(env model.Env) *Router {
 	return &Router{
 		Env:    env,
 		router: httprouter.New(),

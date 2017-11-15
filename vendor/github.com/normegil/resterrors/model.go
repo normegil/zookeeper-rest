@@ -1,7 +1,9 @@
-package errors
+package resterrors
 
 import (
+	"net/url"
 	"strconv"
+	"time"
 
 	"encoding/json"
 
@@ -30,6 +32,33 @@ func NewErrWithCode(code int, e error) ErrWithCode {
 		code:  code,
 		error: e,
 	}
+}
+
+type ErrorDefinition struct {
+	Code       int
+	HTTPStatus int
+	MoreInfo   string
+	Message    string
+}
+
+func (d ErrorDefinition) ToResponse(err error) (*ErrorResponse, error) {
+	eMarshallable, isMarshable := err.(marshableError)
+	if !isMarshable {
+		eMarshallable = errorFormat.Error{err.Error()}
+	}
+	moreInfoURL, err := url.Parse(d.MoreInfo)
+	if err != nil {
+		return nil, errors.Wrapf(err, "Parsing %s as URL", d.MoreInfo)
+	}
+	moreInfo := urlFormat.URL{moreInfoURL}
+	return &ErrorResponse{
+		HTTPStatus: d.HTTPStatus,
+		Code:       d.Code,
+		Message:    d.Message,
+		MoreInfo:   moreInfo,
+		Time:       timeFormat.Time(time.Now()),
+		Err:        eMarshallable,
+	}, nil
 }
 
 type ErrorResponse struct {

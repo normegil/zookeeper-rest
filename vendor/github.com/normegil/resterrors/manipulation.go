@@ -1,30 +1,30 @@
-package errors
+package resterrors
 
 import "github.com/pkg/errors"
 
-type stacktracer interface {
+type Stacktracer interface {
 	StackTrace() errors.StackTrace
 }
 
-type causer interface {
+type Causer interface {
 	Cause() error
 }
 
-func stacks(err error) []errors.StackTrace {
+func Stacks(err error) []errors.StackTrace {
 	var stacktraces []errors.StackTrace
-	errCauser, isCauser := err.(causer)
+	errCauser, isCauser := err.(Causer)
 	if isCauser {
-		stacktraces = stacks(errCauser.Cause())
+		stacktraces = Stacks(errCauser.Cause())
 	}
 
-	stackErr, isStacktacer := err.(stacktracer)
+	stackErr, isStacktacer := err.(Stacktracer)
 	if isStacktacer {
 		stacktraces = append(stacktraces, stackErr.StackTrace())
 	}
 	return stacktraces
 }
 
-func getErrWithCode(e error) ErrWithCode {
+func getErrWithCode(e error, defaultCode int) ErrWithCode {
 	found := SearchThroughCauses(e, func(e error) bool {
 		_, isErrWithCode := e.(ErrWithCode)
 		return isErrWithCode
@@ -34,7 +34,7 @@ func getErrWithCode(e error) ErrWithCode {
 		return found.(ErrWithCode)
 	}
 
-	return NewErrWithCode(DEFAULT_CODE, e)
+	return NewErrWithCode(defaultCode, e)
 }
 
 func SearchThroughCauses(e error, isSearched func(error) bool) error {
@@ -47,7 +47,7 @@ func SearchThroughCauses(e error, isSearched func(error) bool) error {
 		return e
 	}
 
-	errWithCause, isErrWithCause := e.(causer)
+	errWithCause, isErrWithCause := e.(Causer)
 	if !isErrWithCause || nil == errWithCause.Cause() {
 		return nil
 	}

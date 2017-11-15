@@ -11,7 +11,7 @@ import (
 	log "github.com/normegil/golog"
 	"github.com/normegil/mongo"
 	"github.com/normegil/zookeeper-rest/api/node"
-	"github.com/normegil/zookeeper-rest/modules/environment"
+	"github.com/normegil/zookeeper-rest/modules/model"
 	"github.com/normegil/zookeeper-rest/modules/zookeeper"
 	"github.com/normegil/zookeeper-rest/router"
 	"github.com/pkg/errors"
@@ -71,7 +71,7 @@ var RootCmd = &cobra.Command{
 			IP:   net.ParseIP(viper.GetString(ZOOKEEPER_ADDRESS)),
 			Port: viper.GetInt(ZOOKEEPER_PORT),
 		}
-		env := environment.Env{
+		env := model.Env{
 			Logger: logger,
 			Zk: zookeeper.Zookeeper{
 				Address: zkAddress,

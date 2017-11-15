@@ -10,8 +10,8 @@ import (
 	"testing"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/normegil/zookeeper-rest/modules/environment"
-	errPkg "github.com/normegil/zookeeper-rest/modules/errors"
+	"github.com/normegil/resterrors"
+	"github.com/normegil/zookeeper-rest/modules/model"
 	"github.com/normegil/zookeeper-rest/modules/test"
 	"github.com/normegil/zookeeper-rest/modules/zookeeper"
 	"github.com/pkg/errors"
@@ -36,7 +36,7 @@ func TestController(t *testing.T) {
 	zkCli, closeZkFn := zookeeper.Test_NewZookeeperClient(t)
 	defer closeZkFn()
 
-	c := Controller{environment.Env{Logger: logrus.New(), Zk: zkCli}}
+	c := Controller{model.Env{Logger: logrus.New(), Zk: zkCli}}
 	nodeHandlers := make(map[string]map[string]httprouter.Handle)
 	for _, route := range c.Routes() {
 		method := route.Method()
@@ -126,7 +126,7 @@ func TestController(t *testing.T) {
 					t.Error(test.Format("Expected response status is not equals to received status", testdata.ExpectedStatus, result.Code))
 				}
 				if testdata.ExpectedStatus != http.StatusOK {
-					var response errPkg.ErrorResponse
+					var response resterrors.ErrorResponse
 					if err := json.Unmarshal(result.Body.Bytes(), &response); err != nil {
 						t.Fatal(errors.Wrapf(err, "Could not unmarshal response body %s", string(result.Body.Bytes())))
 					}
@@ -197,7 +197,7 @@ func TestController(t *testing.T) {
 					t.Error(test.Format("Expected response status is not equals to received status", testdata.ExpectedStatus, result.Code))
 				}
 				if testdata.ExpectedStatus != http.StatusOK {
-					var response errPkg.ErrorResponse
+					var response resterrors.ErrorResponse
 					if err := json.Unmarshal(result.Body.Bytes(), &response); err != nil {
 						t.Fatal(errors.Wrapf(err, "Could not unmarshal response body %s", string(result.Body.Bytes())))
 					}
@@ -263,7 +263,7 @@ func TestController(t *testing.T) {
 					t.Error(test.Format("Expected response status is not equals to received status", testdata.ExpectedStatus, result.Code))
 				}
 				if testdata.ExpectedStatus != http.StatusOK {
-					var response errPkg.ErrorResponse
+					var response resterrors.ErrorResponse
 					if err := json.Unmarshal(result.Body.Bytes(), &response); err != nil {
 						t.Fatal(errors.Wrapf(err, "Could not unmarshal response body %s", string(result.Body.Bytes())))
 					}
@@ -320,7 +320,7 @@ func TestController(t *testing.T) {
 					t.Error(test.Format("Expected response status is not equals to received status", testdata.ExpectedStatus, result.Code))
 				}
 				if testdata.ExpectedStatus != http.StatusOK {
-					var response errPkg.ErrorResponse
+					var response resterrors.ErrorResponse
 					if err := json.Unmarshal(result.Body.Bytes(), &response); err != nil {
 						t.Fatal(errors.Wrapf(err, "Could not unmarshal response body %s", string(result.Body.Bytes())))
 					}

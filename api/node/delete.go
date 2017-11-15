@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	errPkg "github.com/normegil/zookeeper-rest/modules/errors"
+	"github.com/normegil/resterrors"
 	"github.com/pkg/errors"
 	"github.com/samuel/go-zookeeper/zk"
 
@@ -23,7 +23,7 @@ func (c Controller) remove(w http.ResponseWriter, r *http.Request, params httpro
 	} else if "" == path {
 		return errors.New("No path corresponding to ID")
 	} else if "/" == path {
-		return errPkg.NewErrWithCode(40004, errors.New("Cannot remove root path"))
+		return resterrors.NewErrWithCode(40004, errors.New("Cannot remove root path"))
 	}
 
 	recursiveStr := r.URL.Query().Get("recursive")
@@ -31,18 +31,18 @@ func (c Controller) remove(w http.ResponseWriter, r *http.Request, params httpro
 	if "" != recursiveStr {
 		recursive, err = strconv.ParseBool(recursiveStr)
 		if err != nil {
-			return errPkg.NewErrWithCode(40003, errors.Wrapf(err, "'recursive' query parameter could not be parsed (Wrong value %s)", recursiveStr))
+			return resterrors.NewErrWithCode(40003, errors.Wrapf(err, "'recursive' query parameter could not be parsed (Wrong value %s)", recursiveStr))
 		}
 	}
 
 	c.Log().WithField("path", path).WithField("recursive", recursive).Info("Deleting node")
 	if err = c.Zookeeper().Delete(path, recursive); nil != err {
 		toReturn := errors.Wrapf(err, "Could not remove %s: ", path)
-		found := errPkg.SearchThroughCauses(err, func(e error) bool {
+		found := resterrors.SearchThroughCauses(err, func(e error) bool {
 			return zk.ErrNotEmpty == e
 		})
 		if nil != found {
-			return errPkg.NewErrWithCode(40005, toReturn)
+			return resterrors.NewErrWithCode(40005, toReturn)
 		}
 		return toReturn
 	}
